@@ -1,8 +1,8 @@
 """Build tiga arah mockup Dessert by Anyha.
 
 Sumber:
-  data/site.json    identitas, tautan Instagram, catatan pratinjau
-  data/menu.json    produk dan isinya (harga belum dikirim pemilik)
+  data/site.json    identitas, tautan Instagram, alamat, catatan pratinjau
+  data/menu.json    tiga produk, harga, dan rincian isian dari pemilik
   assets-src/*.jpeg foto dari pemilik akun
   assets/css/*.css  satu berkas per arah plus pemilih
   assets/js/site.js menu mobile dan lightbox foto
@@ -36,14 +36,15 @@ FONTS = {
     1: "family=Fraunces:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700",
     2: "family=Anton&family=Plus+Jakarta+Sans:wght@400;500;700",
     3: "family=Cormorant+Garamond:ital,wght@0,300;0,500;1,400&family=Karla:wght@400;500;700",
+    4: "family=Plus+Jakarta+Sans:wght@400;500;700;800",
 }
 PEMILIH_FONTS = "family=Fraunces:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700"
 
 DESKRIPSI = {
-    "beranda": "Dessert cup mangga dan fruit punch buatan rumahan dari Dessert by Anyha. Lihat menunya, lalu pesan lewat Instagram. Halaman ini masih mockup desain.",
-    "menu": "Menu Dessert by Anyha: dessert cup mangga dan fruit punch. Pesan lewat Instagram. Halaman ini masih mockup desain.",
-    "tentang": "Cerita Dessert by Anyha, dessert rumahan yang diracik per pesanan. Halaman ini masih mockup desain.",
-    "kontak": "Cara pesan Dessert by Anyha lewat Instagram dan area pengiriman yang menyusul. Halaman ini masih mockup desain.",
+    "beranda": "Mango Sago, Fruit Punch, dan Asinan Kiamboy buatan rumahan dari Dessert by Anyha di Simpang IV Sipin, Jambi. Lihat harga dan isiannya, lalu pesan lewat Instagram. Halaman ini masih mockup desain.",
+    "menu": "Menu Dessert by Anyha: Mango Sago Rp12.000, Fruit Punch Rp12.000, Asinan Kiamboy Rp15.000, lengkap dengan isiannya. Pesan lewat Instagram. Halaman ini masih mockup desain.",
+    "tentang": "Cerita Dessert by Anyha, dessert dan minuman rumahan di Simpang IV Sipin, Jambi, yang diracik per pesanan. Halaman ini masih mockup desain.",
+    "kontak": "Cara pesan Dessert by Anyha lewat Instagram, plus lokasi di Simpang IV Sipin, Jambi City. Halaman ini masih mockup desain.",
 }
 
 IKON_IG = (
@@ -72,6 +73,42 @@ def pesan(kelas, teks, produk=None, ikon=False):
     isi = (IKON_IG + " ") if ikon else ""
     return '<a class="%s" href="%s" target="_blank" rel="noopener">%s%s</a>' % (
         kelas, escape(tautan_pesan(produk)), isi, teks)
+
+
+# ------------------------------------------------------------------ produk
+_PETA_FOTO = {"mango-sago": "cup", "fruit-punch": "punch", "asinan-kiamboy": "asinan"}
+
+
+def kunci_foto(p, gaya):
+    """Nama kunci gambar per arah, misal a2_asinan."""
+    return "a%d_%s" % (gaya, _PETA_FOTO[p["slug"]])
+
+
+def rincian(p, kelas="rincian"):
+    """Blok rincian isian. Tiap kelompok jadi satu kolom berjudul."""
+    kolom = []
+    for k in p.get("kelompok", []):
+        butir = "".join("<li>%s</li>" % escape(t) for t in k["isi"])
+        kolom.append(f'<div class="{kelas}__kolom"><p class="{kelas}__judul">{escape(k["judul"])}</p>'
+                     f'<ul class="{kelas}__daftar">{butir}</ul></div>')
+    if not kolom:
+        return ""
+    catatan = ""
+    if p.get("catatan"):
+        catatan = '<p class="%s__catatan">%s</p>' % (kelas, escape(p["catatan"]))
+    return '<div class="%s">%s</div>%s' % (kelas, "".join(kolom), catatan)
+
+
+def semua_kartu(kartu, g):
+    """Semua produk berurutan. Fungsi kartu arah 2 menerima nomor urut,
+    jadi dicoba dengan nomor dulu lalu tanpa nomor."""
+    hasil = []
+    for i, p in enumerate(MENU, 1):
+        try:
+            hasil.append(kartu(p, g, i))
+        except TypeError:
+            hasil.append(kartu(p, g))
+    return "".join(hasil)
 
 
 # ------------------------------------------------------------------ gambar
@@ -104,26 +141,30 @@ def sumber_bersih(nama, potong_bawah=0.0):
     return im
 
 
-def logo_putar(nama, sisi, latar=(253, 251, 244), mutu=86):
-    """Logo kiriman pemilik tersimpan miring 90 derajat, jadi teks Fruit Punch
-    terbaca kalau kepalanya dimiringkan. Diputar searah jarum jam dulu, lalu
-    dipangkas ke isi labelnya supaya tidak menyisakan margin putih besar."""
-    im = sumber(nama).rotate(-90, expand=True)
+def logo_transparan(nama, sisi, tinta, mutu=92, margin=0.08):
+    """Logo kiriman pemilik: JPEG bergaris hitam di atas kertas putih, tersimpan
+    miring 90 derajat. Kertasnya dibuang jadi transparan dan tinta diwarnai
+    ulang sesuai latar arah, jadi logo menyatu dengan halaman, bukan tampil
+    sebagai kotak putih."""
+    im = sumber(nama).convert("L").rotate(-90, expand=True)
 
-    # pangkas margin putih: cari kotak piksel yang bukan hampir putih
-    kecil = im.convert("L").resize((im.width // 4, im.height // 4), Image.LANCZOS)
-    kotak = kecil.point(lambda v: 255 if v < 235 else 0).getbbox()
+    # pangkas kertas putih di luar bingkai label
+    kotak = im.point(lambda v: 255 if v < 245 else 0).getbbox()
     if kotak:
-        k = 4
-        tepi = 12
+        tepi = 8
         im = im.crop((
-            max(0, kotak[0] * k - tepi), max(0, kotak[1] * k - tepi),
-            min(im.width, kotak[2] * k + tepi), min(im.height, kotak[3] * k + tepi),
+            max(0, kotak[0] - tepi), max(0, kotak[1] - tepi),
+            min(im.width, kotak[2] + tepi), min(im.height, kotak[3] + tepi),
         ))
 
-    # kanvas persegi berwarna latar section, jadi logo tidak terlihat sebagai kartu
-    kanvas = Image.new("RGB", (im.width + 80, im.height + 80), latar)
-    kanvas.paste(im, (40, 40))
+    # alfa dari gelapnya piksel: putih hilang, tepi garis tetap halus
+    alfa = im.point(lambda v: 0 if v >= 246 else min(255, (246 - v) * 255 // 210))
+    tinta_im = Image.new("RGBA", im.size, tuple(tinta) + (255,))
+    tinta_im.putalpha(alfa)
+
+    kanvas_sisi = int(round(max(im.width, im.height) * (1 + 2 * margin)))
+    kanvas = Image.new("RGBA", (kanvas_sisi, kanvas_sisi), (0, 0, 0, 0))
+    kanvas.paste(tinta_im, ((kanvas_sisi - im.width) // 2, (kanvas_sisi - im.height) // 2))
     return kanvas.resize((sisi, sisi), Image.LANCZOS)
 
 
@@ -133,29 +174,39 @@ def siapkan_gambar():
     os.makedirs(IMG, exist_ok=True)
     hasil = {}
 
-    cup_sun = sumber_bersih("mango-cup-sunlit.jpeg", 0.09)
-    cup_hand = sumber("mango-cup-hand.jpeg")
-    cup_dim = sumber("mango-cup-dim.jpeg")
+    cup_sun = sumber_bersih("mango-sago-sunlit.jpeg", 0.09)
+    cup_hand = sumber("mango-sago-hand.jpeg")
     punch = sumber("fruit-punch.jpeg")
+    asinan = sumber("asinan-kiamboy.jpeg")
     logo = sumber("logo-anyha.jpeg")
 
     hasil["a1_hero"] = webp(potong(cup_sun, 4 / 5, 0.5).resize((900, 1125), Image.LANCZOS), "a1-hero.webp")
     hasil["a1_cup"] = webp(potong(cup_hand, 4 / 5, 0.5).resize((800, 1000), Image.LANCZOS), "a1-cup.webp")
     hasil["a1_punch"] = webp(potong(punch, 4 / 5, 0.5).resize((800, 1000), Image.LANCZOS), "a1-punch.webp")
-    hasil["a1_cup_dim"] = webp(potong(cup_dim, 4 / 5, 0.5).resize((800, 1000), Image.LANCZOS), "a1-cup-dim.webp")
-    hasil["a1_logo"] = webp(logo_putar("logo-anyha.jpeg", 520, (255, 253, 248)), "a1-logo.webp")
-    hasil["a2_logo"] = webp(logo_putar("logo-anyha.jpeg", 520, (34, 27, 22)), "a2-logo.webp")
+    hasil["a1_asinan"] = webp(potong(asinan, 4 / 5, 0.5).resize((800, 1000), Image.LANCZOS), "a1-asinan.webp")
+    hasil["a1_logo"] = webp(logo_transparan("logo-anyha.jpeg", 520, (42, 29, 21)), "a1-logo.webp")
+    hasil["a2_logo"] = webp(logo_transparan("logo-anyha.jpeg", 520, (255, 248, 236)), "a2-logo.webp")
 
     hasil["a2_panggung"] = webp(potong(cup_sun, 16 / 9, 0.5).resize((1600, 900), Image.LANCZOS), "a2-panggung.webp", 82)
     hasil["a2_cup"] = webp(potong(cup_hand, 1, 0.5).resize((360, 360), Image.LANCZOS), "a2-cup.webp")
     hasil["a2_punch"] = webp(potong(punch, 1, 0.5).resize((360, 360), Image.LANCZOS), "a2-punch.webp")
-    hasil["a2_panggung_menu"] = webp(potong(cup_dim, 16 / 9, 0.5).resize((1600, 900), Image.LANCZOS), "a2-panggung-menu.webp", 82)
+    hasil["a2_asinan"] = webp(potong(asinan, 1, 0.5).resize((360, 360), Image.LANCZOS), "a2-asinan.webp")
+    hasil["a2_panggung_menu"] = webp(potong(asinan, 16 / 9, 0.4).resize((1600, 900), Image.LANCZOS), "a2-panggung-menu.webp", 82)
 
     hasil["a3_hero"] = webp(potong(cup_sun, 16 / 10, 0.5).resize((1440, 900), Image.LANCZOS), "a3-hero.webp")
     hasil["a3_cup"] = webp(potong(cup_hand, 1, 0.5).resize((640, 640), Image.LANCZOS), "a3-cup.webp")
     hasil["a3_punch"] = webp(potong(punch, 1, 0.5).resize((640, 640), Image.LANCZOS), "a3-punch.webp")
-    hasil["a3_cup_dim"] = webp(potong(cup_dim, 3 / 4, 0.5).resize((720, 960), Image.LANCZOS), "a3-cup-dim.webp")
-    hasil["a3_logo"] = webp(logo_putar("logo-anyha.jpeg", 480, (253, 252, 248)), "a3-logo.webp")
+    hasil["a3_asinan"] = webp(potong(asinan, 1, 0.5).resize((640, 640), Image.LANCZOS), "a3-asinan.webp")
+    hasil["a3_logo"] = webp(logo_transparan("logo-anyha.jpeg", 480, (38, 43, 34)), "a3-logo.webp")
+
+    # arah 4 mengikuti tata letak situs referensi: foto produk 4/3, bingkai putih
+    hasil["a4_logo"] = webp(logo_transparan("logo-anyha.jpeg", 560, (18, 63, 42)), "a4-logo.webp")
+    hasil["a4_hero"] = webp(potong(cup_sun, 4 / 3, 0.45).resize((1100, 825), Image.LANCZOS), "a4-hero.webp")
+    hasil["a4_cup"] = webp(potong(cup_hand, 4 / 3, 0.5).resize((720, 540), Image.LANCZOS), "a4-cup.webp")
+    hasil["a4_punch"] = webp(potong(punch, 4 / 3, 0.5).resize((720, 540), Image.LANCZOS), "a4-punch.webp")
+    hasil["a4_asinan"] = webp(potong(asinan, 4 / 3, 0.5).resize((720, 540), Image.LANCZOS), "a4-asinan.webp")
+    hasil["a4_cerita"] = webp(potong(asinan, 1, 0.45).resize((820, 820), Image.LANCZOS), "a4-cerita.webp")
+    hasil["a4_proses"] = webp(potong(cup_hand, 1, 0.5).resize((820, 820), Image.LANCZOS), "a4-proses.webp")
 
     og = potong(cup_sun, 1200 / 630, 0.45).resize((1200, 630), Image.LANCZOS)
     og.save(os.path.join(IMG, "og.jpg"), "JPEG", quality=84, optimize=True, progressive=True)
@@ -167,6 +218,7 @@ def siapkan_gambar():
         ("favicon.png", (251, 244, 231), (42, 29, 21)),
         ("favicon-2.png", (20, 16, 14), (255, 179, 40)),
         ("favicon-3.png", (245, 242, 234), (70, 82, 58)),
+        ("favicon-4.png", (251, 247, 238), (18, 63, 42)),
     ):
         ikon = Image.new("RGB", (128, 128), warna)
         g = ImageDraw.Draw(ikon)
@@ -200,7 +252,7 @@ def pita_mockup():
     return """
 <div class="pita-mockup" role="note">
   <span>Mockup desain</span>
-  <p>Belum situs resmi. Harga, nomor WhatsApp, dan area kirim masih menunggu pemilik.</p>
+  <p>Belum situs resmi. Nomor WhatsApp dan jam pesanan masih menunggu pemilik.</p>
 </div>"""
 
 
@@ -256,10 +308,10 @@ def tutup(melayang=True):
 def kaki(gaya):
     isi = f"""
 <footer class="kaki">
-  <div class="wrap kaki__{'grid' if gaya == 1 else 'isi'}">
+  <div class="wrap kaki__{'grid' if gaya in (1, 4) else 'isi'}">
     <div>
       <strong>{escape(NAMA)}</strong>
-      <p>Dessert rumahan dari mangga pilihan dan campuran buah segar. Pesanan lewat Instagram.</p>
+      <p>Dessert dan minuman buah rumahan dari {escape(SITE.get('alamat', 'Jambi'))}. Pesanan lewat Instagram.</p>
     </div>
     <div>
       <ul>
@@ -267,6 +319,7 @@ def kaki(gaya):
         <li><a href="/arah-{gaya}/tentang/">Tentang</a></li>
         <li><a href="/arah-{gaya}/kontak/">Cara pesan</a></li>
         <li><a href="{escape(SITE['instagram'])}" target="_blank" rel="noopener">Instagram {escape(SITE['handle'])}</a></li>
+        <li><a href="{escape(SITE.get('maps', SITE['instagram']))}" target="_blank" rel="noopener">{escape(SITE.get('alamat', 'Lokasi'))}</a></li>
       </ul>
     </div>
   </div>
@@ -319,8 +372,7 @@ def nav_1(aktif):
 
 
 def kartu_1(p, g):
-    tag = "".join("<li>%s</li>" % escape(t) for t in p["isi"])
-    kunci = "a1_cup" if p["slug"] == "mango-cup" else "a1_punch"
+    kunci = kunci_foto(p, 1)
     return f"""
       <article class="kartu">
         <div class="kartu__foto">
@@ -330,11 +382,12 @@ def kartu_1(p, g):
         <div class="kartu__isi">
           <p class="kartu__label">{escape(p['label'])}</p>
           <h3>{escape(p['nama'])}</h3>
+          <p class="kartu__harga">{escape(p['harga'])}</p>
           <p>{escape(p['deskripsi'])}</p>
-          <ul class="tag">{tag}</ul>
+          {rincian(p, "rincian")}
           <div class="kartu__kaki">
-            <span>Harga menyusul</span>
-            {pesan("tautan-kecil", "Tanya harga", p["nama"])}
+            <span>{escape(p['catatan'])}</span>
+            {pesan("tautan-kecil", "Pesan", p["nama"] + " " + p["harga"])}
           </div>
         </div>
       </article>"""
@@ -342,7 +395,7 @@ def kartu_1(p, g):
 
 def langkah_1():
     langkah = [
-        ("Pilih menunya", "Lihat dua menu yang tersedia, lalu tentukan jumlahnya."),
+        ("Pilih menunya", "Lihat tiga menu beserta harganya, lalu tentukan jumlahnya."),
         ("Chat Instagram", "Kirim pesan berisi menu, jumlah, dan tanggal ambil atau kirim."),
         ("Konfirmasi", "Pemilik membalas harga dan jadwal. Pesanan disiapkan setelah itu."),
     ]
@@ -357,7 +410,7 @@ def langkah_1():
 def arah_1(g):
     return kepala(
         "Mockup Dessert by Anyha, dessert cup mangga rumahan",
-        DESKRIPSI["beranda"] + " Dua menu: Mango Dessert Cup dan Fruit Punch.",
+        DESKRIPSI["beranda"] + " Tiga menu: Mango Sago, Fruit Punch, dan Asinan Kiamboy.",
         "arah-1.css", "#FBF4E7", FONTS[1], "/arah-1/", "favicon.png",
     ) + nav_1("beranda") + f"""
 <main id="utama">
@@ -389,11 +442,11 @@ def arah_1(g):
     <div class="bagian__kepala">
       <div>
         <p class="label"><span>01</span> Menu</p>
-        <h2>Dua menu, satu rasa dasar: manis yang tidak berlebihan.</h2>
+        <h2>Tiga menu, semua dirakit setelah pesanan masuk.</h2>
       </div>
-      <p>Harga belum ditampilkan karena menunggu daftar resmi dari pemilik. Tanyakan lewat Instagram, balasannya cepat.</p>
+      <p>Harga per cup atau botol. Isian lengkap tiap menu ada di bawah, supaya tidak perlu tanya dulu.</p>
     </div>
-    <div class="menu-grid">{kartu_1(MENU[0], g)}{kartu_1(MENU[1], g)}</div>
+    <div class="menu-grid">{semua_kartu(kartu_1, g)}</div>
   </div>
 </section>
 
@@ -431,10 +484,10 @@ def halaman_1(aktif, judul, deskripsi, path, isi):
 
 
 def isi_menu_1(g):
-    return kepala_dalam("01", "Menu", "Menu hari ini.", "Dua menu yang tersedia. Harga menyusul dari pemilik, tanyakan lewat Instagram untuk daftar terbaru.") + f"""
+    return kepala_dalam("01", "Menu", "Menu hari ini.", "Tiga menu yang tersedia sekarang, lengkap dengan harga dan isiannya.") + f"""
 <section class="bagian">
   <div class="wrap">
-    <div class="menu-grid">{kartu_1(MENU[0], g)}{kartu_1(MENU[1], g)}</div>
+    <div class="menu-grid">{semua_kartu(kartu_1, g)}</div>
     <div class="d-catatan">
       <p><strong>Pesan lewat Instagram.</strong> Sebutkan menu, jumlah, dan tanggal.</p>
       {pesan("tombol", "Chat Instagram", ikon=True)}
@@ -489,7 +542,7 @@ def isi_tentang_1(g):
         {gambar(g["a1_cup"], "Dessert cup mangga digenggam, tampak lapisan mangga dan sagu")}
       </figure>
       <figure class="kartu" style="padding:1rem">
-        {gambar(g["a1_cup_dim"], "Dessert cup mangga di dalam ruangan, tampak atas mangga dan susu")}
+        {gambar(g["a1_punch"], "Botol Fruit Punch oranye dengan label Fruit Punch by Anyha")}
       </figure>
     </div>
   </div>
@@ -528,7 +581,7 @@ def isi_kontak_1():
         <p class="label"><span>02</span> Yang perlu disebut</p>
         <h2>Agar balasan langsung berisi total.</h2>
         <ul class="d-daftar">
-          <li><strong>Menu</strong><span>Mango Dessert Cup atau Fruit Punch</span></li>
+          <li><strong>Menu</strong><span>Mango Sago, Fruit Punch, atau Asinan Kiamboy</span></li>
           <li><strong>Jumlah</strong><span>Berapa cup atau botol</span></li>
           <li><strong>Tanggal</strong><span>Kapan mau diambil atau dikirim</span></li>
           <li><strong>Alamat</strong><span>Kalau minta dikirim</span></li>
@@ -569,8 +622,7 @@ def nav_2(aktif):
 
 
 def baris_menu_2(p, g, nomor):
-    tag = "".join("<li>%s</li>" % escape(t) for t in p["isi"])
-    kunci = "a2_cup" if p["slug"] == "mango-cup" else "a2_punch"
+    kunci = kunci_foto(p, 2)
     return f"""
       <li>
         <div class="baris-menu__isi">
@@ -582,11 +634,11 @@ def baris_menu_2(p, g, nomor):
             <p class="baris-menu__nomor">{nomor:02d}</p>
             <h3>{escape(p['nama'])}</h3>
             <p>{escape(p['deskripsi'])}</p>
-            <ul class="baris-menu__tag">{tag}</ul>
+            {rincian(p, "rincian-2")}
           </div>
           <div class="baris-menu__kanan">
-            <span class="baris-menu__harga">Harga menyusul</span>
-            <a class="tautan-kecil" href="{escape(tautan_pesan(p['nama']))}" target="_blank" rel="noopener">Pesan</a>
+            <span class="baris-menu__harga">{escape(p['harga'])}</span>
+            <a class="tautan-kecil" href="{escape(tautan_pesan(p['nama'] + ' ' + p['harga']))}" target="_blank" rel="noopener">Pesan</a>
           </div>
         </div>
       </li>"""
@@ -654,10 +706,10 @@ def arah_2(g):
   <div class="wrap">
     <div class="bagian__kepala">
       <p class="label"><span>01</span> Menu</p>
-      <h2>Dua barang.</h2>
-      <p>Harga menyusul dari pemilik. Chat untuk daftar harga terbaru, balasannya cepat.</p>
+      <h2>Tiga barang.</h2>
+      <p>Harga per cup atau botol, isian lengkap di tiap baris.</p>
     </div>
-    <ul class="baris-menu">{baris_menu_2(MENU[0], g, 1)}{baris_menu_2(MENU[1], g, 2)}</ul>
+    <ul class="baris-menu">{semua_kartu(baris_menu_2, g)}</ul>
   </div>
 </section>
 
@@ -708,10 +760,10 @@ def halaman_2(aktif, judul, deskripsi, path, isi):
 
 
 def isi_menu_2(g):
-    return kepala_dalam("01", "Menu", "Dua barang, harga menyusul.", "Daftar ini yang tersedia sekarang. Harga belum dikirim pemilik, jadi chat untuk daftar terbaru.") + f"""
+    return kepala_dalam("01", "Menu", "Tiga barang, harga jelas.", "Daftar ini yang tersedia sekarang, lengkap dengan harga dan isiannya.") + f"""
 <section class="bagian">
   <div class="wrap">
-    <ul class="baris-menu">{baris_menu_2(MENU[0], g, 1)}{baris_menu_2(MENU[1], g, 2)}</ul>
+    <ul class="baris-menu">{semua_kartu(baris_menu_2, g)}</ul>
     <div class="d-catatan">
       <p>Pesan lewat Instagram, sebutkan menu dan jumlahnya.</p>
       {pesan("tombol", "Chat Instagram", ikon=True)}
@@ -801,7 +853,7 @@ def isi_kontak_2():
         <p class="label"><span>02</span> Isi chat</p>
         <h2>Supaya balasan langsung berisi total.</h2>
         <ul class="d-daftar">
-          <li><strong>Menu</strong><span>Mango Dessert Cup atau Fruit Punch</span></li>
+          <li><strong>Menu</strong><span>Mango Sago, Fruit Punch, atau Asinan Kiamboy</span></li>
           <li><strong>Jumlah</strong><span>Berapa cup atau botol</span></li>
           <li><strong>Tanggal</strong><span>Kapan mau diambil atau dikirim</span></li>
           <li><strong>Alamat</strong><span>Kalau minta dikirim</span></li>
@@ -842,21 +894,20 @@ def nav_3(aktif):
 
 
 def daftar_3(p, g):
-    tag = "".join("<li>%s</li>" % escape(t) for t in p["isi"])
-    kunci = "a3_cup" if p["slug"] == "mango-cup" else "a3_punch"
+    kunci = kunci_foto(p, 3)
     return f"""
       <li>
         <div class="daftar-menu__isi">
           <h3>{escape(p['nama'])}</h3>
-          <span class="daftar-menu__harga">Harga menyusul</span>
+          <span class="daftar-menu__harga">{escape(p['harga'])}</span>
         </div>
         <p>{escape(p['deskripsi'])}</p>
-        <ul class="daftar-menu__tag">{tag}</ul>
+        {rincian(p, "rincian-3")}
         <figure class="daftar-menu__foto">
           {gambar(g[kunci], p['foto_alt'])}
           <button class="tombol-zoom" type="button" data-zoom="/{g[kunci]['berkas']}" data-zoom-alt="{escape(p['foto_alt'])}" aria-label="Perbesar foto {escape(p['nama'])}">{IKON_ZOOM}</button>
         </figure>
-        <a class="tautan-kecil" href="{escape(tautan_pesan(p['nama']))}" target="_blank" rel="noopener">Tanya harga lewat Instagram</a>
+        <a class="tautan-kecil" href="{escape(tautan_pesan(p['nama'] + ' ' + p['harga']))}" target="_blank" rel="noopener">Pesan {escape(p['nama'])}</a>
       </li>"""
 
 
@@ -879,7 +930,7 @@ def langkah_3():
 def arah_3(g):
     return kepala(
         "Mockup Dessert by Anyha, dessert cup mangga",
-        DESKRIPSI["beranda"] + " Dua menu: Mango Dessert Cup dan Fruit Punch.",
+        DESKRIPSI["beranda"] + " Tiga menu: Mango Sago, Fruit Punch, dan Asinan Kiamboy.",
         "arah-3.css", "#F5F2EA", FONTS[3], "/arah-3/", "favicon-3.png",
     ) + nav_3("beranda") + f"""
 <main id="utama">
@@ -908,7 +959,7 @@ def arah_3(g):
       <h2>Yang tersedia hari ini.</h2>
       <p>Harga belum ditampilkan karena menunggu daftar resmi dari pemilik. Tanyakan lewat Instagram.</p>
     </div>
-    <ul class="daftar-menu">{daftar_3(MENU[0], g)}{daftar_3(MENU[1], g)}</ul>
+    <ul class="daftar-menu">{semua_kartu(daftar_3, g)}</ul>
   </div>
 </section>
 
@@ -949,10 +1000,10 @@ def halaman_3(aktif, judul, deskripsi, path, isi):
 
 
 def isi_menu_3(g):
-    return kepala_dalam("01", "Menu", "Yang tersedia hari ini.", "Dua menu, harga menyusul dari pemilik. Tanyakan lewat Instagram untuk daftar terbaru.") + f"""
+    return kepala_dalam("01", "Menu", "Yang tersedia hari ini.", "Tiga menu dengan harga dan isian lengkap.") + f"""
 <section class="bagian">
   <div class="wrap">
-    <ul class="daftar-menu">{daftar_3(MENU[0], g)}{daftar_3(MENU[1], g)}</ul>
+    <ul class="daftar-menu">{semua_kartu(daftar_3, g)}</ul>
     <div class="d-catatan">
       <p>Pesan lewat Instagram, sebutkan menu dan jumlahnya.</p>
       {pesan("tombol", "Chat Instagram", ikon=True)}
@@ -986,7 +1037,7 @@ def isi_tentang_3(g):
       <div class="aksi">{pesan("tombol", "Chat Instagram", ikon=True)}</div>
     </div>
     <figure class="d-foto">
-      {gambar(g["a3_cup_dim"], "Dessert cup mangga di dalam ruangan, tampak atas mangga dan susu")}
+      {gambar(g["a3_punch"], "Botol Fruit Punch oranye dengan label Fruit Punch by Anyha")}
     </figure>
   </div>
 </section>
@@ -1035,12 +1086,341 @@ def isi_kontak_3():
       <p class="label">02 / Isi chat</p>
       <h2 style="font-size:1.5rem;margin-bottom:1rem">Supaya balasan langsung berisi total.</h2>
       <ul class="d-fakta">
-        <li><strong>Menu</strong><span>Mango Dessert Cup atau Fruit Punch</span></li>
+        <li><strong>Menu</strong><span>Mango Sago, Fruit Punch, atau Asinan Kiamboy</span></li>
         <li><strong>Jumlah</strong><span>Berapa cup atau botol</span></li>
         <li><strong>Tanggal</strong><span>Kapan mau diambil atau dikirim</span></li>
         <li><strong>Alamat</strong><span>Kalau minta dikirim</span></li>
       </ul>
       <p class="d-kecil" style="margin-top:1.5rem">Metode pembayaran menyusul dari pemilik.</p>
+    </div>
+  </div>
+</section>"""
+
+
+# ------------------------------------------------------------------ arah 4
+def nav_4(aktif):
+    def item(kunci, href, teks):
+        tanda = ' aria-current="page"' if aktif == kunci else ""
+        return '<li><a href="%s"%s>%s</a></li>' % (href, tanda, teks)
+    return pita_mockup() + f"""
+<header class="kepala">
+  <div class="wrap kepala__bar">
+    <a class="merek" href="/arah-4/"><strong>{escape(NAMA)}</strong><span>Dessert &amp; minuman buah</span></a>
+    <button class="menu-tombol" type="button" data-nav-tombol aria-expanded="false" aria-controls="nav-utama">
+      <span class="menu-tombol__garis" aria-hidden="true"></span>Menu
+    </button>
+    <nav class="nav" id="nav-utama" data-nav data-terbuka="false" aria-label="Navigasi utama">
+      <ul>
+        {item("menu", "/arah-4/menu/", "Menu")}
+        {item("tentang", "/arah-4/tentang/", "Tentang")}
+        {item("kontak", "/arah-4/kontak/", "Pesan")}
+        <li>{pesan("nav__cta", "Pesan Sekarang")}</li>
+      </ul>
+    </nav>
+  </div>
+</header>"""
+
+
+def kartu_4(p, g, nomor=None):
+    kunci = kunci_foto(p, 4)
+    unggulan = ' produk--favorit' if p["slug"] == "mango-sago" else ""
+    label = '<span class="produk__label">Favorit</span>' if unggulan else ""
+    return f"""
+      <article class="produk{unggulan}">
+        <div class="produk__foto">
+          {label}
+          {gambar(g[kunci], p['foto_alt'])}
+          <button class="tombol-zoom" type="button" data-zoom="/{g[kunci]['berkas']}" data-zoom-alt="{escape(p['foto_alt'])}" aria-label="Perbesar foto {escape(p['nama'])}">{IKON_ZOOM}</button>
+        </div>
+        <div class="produk__isi">
+          <p class="produk__kategori">{escape(p['label'])}</p>
+          <h3>{escape(p['nama'])}</h3>
+          <p class="produk__harga">{escape(p['harga'])}</p>
+          <p class="produk__ket">{escape(p['deskripsi'])}</p>
+          {rincian(p, "rincian-4")}
+          <div class="produk__kaki">
+            {pesan("tombol", "Pesan " + p['nama'], p["nama"] + " seharga " + p["harga"])}
+          </div>
+        </div>
+      </article>"""
+
+
+def langkah_4():
+    langkah = [
+        ("Pilih menunya", "Lihat tiga menu beserta harga dan isiannya, lalu tentukan jumlah."),
+        ("Chat Instagram", "Sebut menu, jumlah, dan kapan mau diambil atau dikirim."),
+        ("Konfirmasi", "Pemilik membalas total dan jadwal siap. Pesanan dirakit setelah itu."),
+    ]
+    return "".join(f"""
+        <li>
+          <span class="langkah__no">{i:02d}</span>
+          <div>
+            <h3>{escape(j)}</h3>
+            <p>{escape(t)}</p>
+          </div>
+        </li>""" for i, (j, t) in enumerate(langkah, 1))
+
+
+def blok_lokasi():
+    alamat = SITE.get("alamat", "")
+    maps = SITE.get("maps", "")
+    tombol = ('<a class="tombol tombol--garis" href="%s" target="_blank" rel="noopener">Buka di Google Maps</a>' % escape(maps)) if maps else ""
+    return f"""
+<section class="bagian bagian--krim2" id="lokasi">
+  <div class="wrap lokasi">
+    <div>
+      <p class="eyebrow">Lokasi</p>
+      <h2>Diambil dari {escape(alamat)}.</h2>
+      <p>Pesanan bisa diambil langsung di lokasi. Untuk pengiriman, sebutkan alamat saat chat, pemilik membalas ongkirnya.</p>
+      <div class="aksi">{tombol}</div>
+    </div>
+    <div class="lokasi__peta">
+      <div>
+        <strong>{escape(alamat)}</strong>
+        <span>Jambi City, Jambi</span>
+        <span>Jam operasional menyusul dari pemilik.</span>
+      </div>
+    </div>
+  </div>
+</section>"""
+
+
+def arah_4(g):
+    return kepala(
+        "Mockup Dessert by Anyha, Mango Sago, Fruit Punch, dan Asinan Kiamboy",
+        DESKRIPSI["beranda"],
+        "arah-4.css", "#FBF7EE", FONTS[4], "/arah-4/", "favicon-4.png",
+    ) + nav_4("beranda") + f"""
+<main id="utama">
+<section class="hero">
+  <div class="wrap hero__grid">
+    <div>
+      <p class="eyebrow">Dessert rumahan, Jambi</p>
+      <h1>Segarnya buah,<em>dirakit saat dipesan.</em></h1>
+      <p class="hero__p">Mango Sago, Fruit Punch, dan Asinan Kiamboy. Semua diracik setelah pesanan masuk, jadi tidak ada yang menginap di kulkas. Pesan lewat Instagram, ambil di Simpang IV Sipin.</p>
+      <div class="aksi">
+        {pesan("tombol", "Pesan lewat Instagram", ikon=True)}
+        <a class="tombol tombol--garis" href="#menu">Lihat menu</a>
+      </div>
+    </div>
+    <figure class="hero__foto">
+      {gambar(g["a4_hero"], "Mango Sago dengan lapisan mangga dan kuah susu di atas piring batu, disinari matahari pagi", prioritas=True)}
+      <button class="tombol-zoom" type="button" data-zoom="/{g['a4_hero']['berkas']}" data-zoom-alt="Mango Sago dengan lapisan susu" aria-label="Perbesar foto Mango Sago">{IKON_ZOOM}</button>
+      <figcaption class="stiker">
+        <span class="stiker__ikon" aria-hidden="true">A</span>
+        <span class="stiker__teks"><strong>Segar, asli, nikmat</strong><span>Tiga menu, satu standar</span></span>
+      </figcaption>
+      <figcaption class="stiker stiker--kanan"><span class="stiker__teks"><strong>Dibuat saat dipesan</strong><span>Bukan stok kulkas</span></span></figcaption>
+    </figure>
+  </div>
+</section>
+
+<div class="strip">
+  <div class="wrap">
+    <ul>
+      <li>Mangga potong asli</li>
+      <li>Sagu mutiara</li>
+      <li>Buah segar</li>
+      <li>Dirakit per pesanan</li>
+    </ul>
+  </div>
+</div>
+
+<section class="bagian" id="menu">
+  <div class="wrap">
+    <div class="bagian__kepala">
+      <p class="eyebrow">Menu &amp; harga</p>
+      <h2>Pilih yang paling kamu suka.</h2>
+      <p>Harga per cup atau botol. Isian lengkap tiap menu ada di kartunya, supaya tidak perlu tanya dulu.</p>
+    </div>
+    <div class="produk-grid">{semua_kartu(kartu_4, g)}</div>
+  </div>
+</section>
+
+<section class="bagian bagian--putih">
+  <div class="wrap dua">
+    <div>
+      <p class="eyebrow">Tentang</p>
+      <h2>Ketika buah segar bertemu kuah yang pas.</h2>
+      <p>Dessert by Anyha mulai dari satu dessert cup mangga yang sering diminta ulang. Sekarang menunya bertambah fruit punch dan asinan kiamboy, dengan cara kerja yang sama: dirakit setelah pesanan masuk.</p>
+      <p>Mangga dipotong hari itu, sagu dimasak sampai kenyal, dan kuah susu diracik dengan gula yang lebih ringan supaya rasa buahnya tetap terasa.</p>
+      <div class="aksi">{pesan("tombol", "Chat Instagram", ikon=True)}</div>
+    </div>
+    <figure>
+      {gambar(g["a4_cerita"], "Asinan Kiamboy dalam cup bening berisi potongan buah dan kuah")}
+      <figcaption class="stiker stiker--kanan"><span class="stiker__teks"><strong>Asinan Kiamboy</strong><span>Segar, manis, pedas, asin, gurih</span></span></figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="bagian bagian--krim2">
+  <div class="wrap">
+    <div class="bagian__kepala">
+      <p class="eyebrow">Kenapa Anyha</p>
+      <h2>Bukan sekadar minuman buah.</h2>
+    </div>
+    <div class="unggul-grid">
+      <div class="unggul">
+        <span class="unggul__no" aria-hidden="true">01</span>
+        <h3>Buah dipotong hari itu</h3>
+        <p>Tidak ada buah yang disiapkan berhari-hari sebelumnya, karena itu rasanya masih segar saat sampai.</p>
+      </div>
+      <div class="unggul">
+        <span class="unggul__no" aria-hidden="true">02</span>
+        <h3>Gula lebih ringan</h3>
+        <p>Kuah susu dan jus diracik dengan takaran gula yang tidak menutupi rasa buahnya.</p>
+      </div>
+      <div class="unggul">
+        <span class="unggul__no" aria-hidden="true">03</span>
+        <h3>Dirakit per pesanan</h3>
+        <p>Pesanan disiapkan setelah chat masuk, jadi tidak ada stok menganggur di kulkas.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bagian bagian--putih">
+  <div class="wrap dua--proses">
+    <div>
+      <p class="eyebrow">Cara pesan</p>
+      <h2>Tiga langkah, lewat chat Instagram.</h2>
+      <ol class="langkah" style="margin-top:1.75rem">{langkah_4()}</ol>
+    </div>
+    <figure>
+      {gambar(g["a4_proses"], "Mango Sago digenggam, tampak lapisan mangga dan sagu mutiara")}
+    </figure>
+  </div>
+</section>
+{blok_lokasi()}
+
+<section class="cta">
+  <div class="wrap cta__isi">
+    <p class="eyebrow">Saatnya pesan</p>
+    <h2>Segarnya bikin pesan lagi.</h2>
+    <p>Sebut menu, jumlah, dan tanggal. Balasan berisi total dan jadwal siap.</p>
+    <div class="aksi">{pesan("tombol tombol--putih", "Pesan lewat Instagram", ikon=True)}</div>
+  </div>
+</section>
+</main>
+""" + kaki(4) + tutup()
+
+
+def halaman_4(aktif, judul, deskripsi, path, isi):
+    return kepala(judul, deskripsi, "arah-4.css", "#FBF7EE", FONTS[4], path, "favicon-4.png") + \
+        nav_4(aktif) + '<main id="utama">' + isi + "</main>" + kaki(4) + tutup()
+
+
+def isi_menu_4(g):
+    return kepala_dalam("01", "Menu", "Tiga menu, harga jelas.", "Harga per cup atau botol. Isian lengkap di tiap kartu.") + f"""
+<section class="bagian">
+  <div class="wrap">
+    <div class="produk-grid">{semua_kartu(kartu_4, g)}</div>
+    <div class="d-catatan">
+      <p><strong>Pesan lewat Instagram.</strong> Sebutkan menu, jumlah, dan tanggal ambil atau kirim.</p>
+      {pesan("tombol", "Chat Instagram", ikon=True)}
+    </div>
+  </div>
+</section>
+<section class="bagian bagian--putih">
+  <div class="wrap">
+    <div class="bagian__kepala">
+      <p class="eyebrow">Cara pesan</p>
+      <h2>Tiga langkah.</h2>
+    </div>
+    <ol class="langkah">{langkah_4()}</ol>
+  </div>
+</section>"""
+
+
+def isi_tentang_4(g):
+    return kepala_dalam("01", "Tentang", "Dibuat di rumah, dirakit saat dipesan.", "Dessert by Anyha mulai dari satu dessert cup mangga yang sering diminta ulang. Cara kerjanya tetap sama: dirakit setelah pesanan masuk.") + f"""
+<section class="bagian">
+  <div class="wrap dua">
+    <div>
+      <p class="eyebrow">Cara kerja</p>
+      <h2>Tidak ada stok menganggur.</h2>
+      <p>Mangga dipotong setelah pesanan masuk, lalu cup dirakit dan langsung disimpan dingin. Fruit punch diracik dari jus dan irisan buah, dan asinan kiamboy memakai kuah segar berasa manis, pedas, asin, dan gurih.</p>
+      <p>Pesanan jumlah banyak sebaiknya masuk sehari sebelumnya, supaya semua bisa disiapkan tepat waktu.</p>
+      <ul class="d-fakta">
+        <li><strong>Bahan</strong><span>Mangga, sagu mutiara, nata de coco, jus jeruk, nanas, lemon, dan buah segar.</span></li>
+        <li><strong>Kemasan</strong><span>Cup plastik bening dan botol, siap disantap langsung.</span></li>
+        <li><strong>Lokasi</strong><span>{escape(SITE.get('alamat', ''))}</span></li>
+      </ul>
+      <div class="aksi">{pesan("tombol", "Chat Instagram", ikon=True)}</div>
+    </div>
+    <figure>
+      {gambar(g["a4_logo"], "Label Fruit Punch by Anyha bertuliskan mix fruit, fresh, less sugar")}
+    </figure>
+  </div>
+</section>
+<section class="bagian bagian--krim2">
+  <div class="wrap">
+    <div class="bagian__kepala">
+      <p class="eyebrow">Foto produk</p>
+      <h2>Seperti ini bentuknya.</h2>
+      <p>Foto dari pemilik akun, tanpa penyuntingan warna.</p>
+    </div>
+    <div class="unggul-grid">
+      <figure style="margin:0">
+        {gambar(g["a4_cup"], "Mango Sago digenggam, tampak mangga dan sagu mutiara")}
+      </figure>
+      <figure style="margin:0">
+        {gambar(g["a4_punch"], "Botol Fruit Punch oranye dengan label Fruit Punch by Anyha")}
+      </figure>
+      <figure style="margin:0">
+        {gambar(g["a4_asinan"], "Asinan Kiamboy dalam cup bening berisi potongan buah")}
+      </figure>
+    </div>
+  </div>
+</section>"""
+
+
+def isi_kontak_4():
+    alamat = SITE.get("alamat", "")
+    maps = SITE.get("maps", "")
+    tombol_maps = ('<a class="tombol tombol--garis" href="%s" target="_blank" rel="noopener">Buka Google Maps</a>' % escape(maps)) if maps else ""
+    return kepala_dalam("01", "Pesan", "Chat, konfirmasi, ambil di Sipin.", "Semua pesanan lewat Instagram. Lokasi pengambilan di " + escape(alamat) + ".") + f"""
+<section class="bagian">
+  <div class="wrap">
+    <div class="grid3">
+      <div class="kartu-info">
+        <h2>Instagram</h2>
+        <p>Cara utama memesan. Kirim menu, jumlah, dan tanggal.</p>
+        <p class="kecil">{escape(SITE['handle'])}</p>
+        {pesan("tombol tombol--garis", "Buka Instagram", ikon=True)}
+      </div>
+      <div class="kartu-info">
+        <h2>Lokasi</h2>
+        <p>{escape(alamat)}</p>
+        <p class="kecil">Jam operasional menyusul dari pemilik.</p>
+        {tombol_maps}
+      </div>
+      <div class="kartu-info">
+        <h2>Ambil atau kirim</h2>
+        <p>Bisa diambil langsung di lokasi, atau dikirim.</p>
+        <p class="kecil">Sebutkan alamat saat chat, ongkir dibalas pemilik.</p>
+      </div>
+    </div>
+    <div class="d-catatan">
+      <p><strong>Jumlah banyak</strong> sebaiknya dipesan sehari sebelumnya.</p>
+      {pesan("tombol", "Tanya jadwal")}
+    </div>
+    <div class="dua" style="margin-top:2.75rem">
+      <div>
+        <p class="eyebrow">Isi chat</p>
+        <h2>Supaya balasan langsung berisi total.</h2>
+        <ul class="d-fakta">
+          <li><strong>Menu</strong><span>Mango Sago, Fruit Punch, atau Asinan Kiamboy</span></li>
+          <li><strong>Jumlah</strong><span>Berapa cup atau botol</span></li>
+          <li><strong>Tanggal</strong><span>Kapan mau diambil atau dikirim</span></li>
+          <li><strong>Alamat</strong><span>Kalau minta dikirim</span></li>
+        </ul>
+      </div>
+      <div>
+        <p class="eyebrow">Pembayaran</p>
+        <h2>Menyusul.</h2>
+        <p>Metode pembayaran belum dikirim pemilik. Halaman ini diperbarui begitu informasinya ada, supaya tidak ada janji yang tidak benar.</p>
+      </div>
     </div>
   </div>
 </section>"""
@@ -1070,6 +1450,13 @@ def halaman_pemilih(g):
             "cocok": "Cocok kalau ingin terlihat mahal dan bersih tanpa ramai.",
             "palet": [("Washi", "#F5F2EA"), ("Tinta", "#262B22"), ("Matcha", "#46523A"), ("Terakota", "#8E4318")],
         },
+        {
+            "slug": "arah-4", "nomor": "04", "nama": "Kebun Buah",
+            "dial": "Energi 3 / Ritme 3 / Gerak 2",
+            "ringkas": "Krem dan putih berselang-seling, aksen hijau tua dan oranye mangga, eyebrow bergaris, foto berbingkai putih dengan label yang keluar bingkai.",
+            "cocok": "Cocok kalau ingin terlihat seperti toko yang sudah mapan, dengan harga dan isian tampil jelas di kartu.",
+            "palet": [("Krim", "#FBF7EE"), ("Putih", "#FFFFFF"), ("Hutan", "#123F2A"), ("Mangga", "#E9681C")],
+        },
     ]
     kartu = []
     for a in arah:
@@ -1088,24 +1475,25 @@ def halaman_pemilih(g):
         <a class="tombol" href="/{a['slug']}/">Buka mockup {escape(a['nama'])}</a>
       </article>""")
     return kepala(
-        "Mockup tiga arah desain untuk Dessert by Anyha",
-        "Pratinjau tiga arah desain situs Dessert by Anyha: Mangga Mentega, Pasar Malam, dan Washi. Isi dan foto sama, arah visual berbeda.",
+        "Mockup empat arah desain untuk Dessert by Anyha",
+        "Pratinjau empat arah desain situs Dessert by Anyha: Mangga Mentega, Pasar Malam, Washi, dan Kebun Buah. Isi dan foto sama, arah visual berbeda.",
         "pemilih.css", "#F7F1E4", PEMILIH_FONTS, "/", "favicon.png",
     ) + pita_mockup() + f"""
 <main id="utama" class="pilih">
   <div class="wrap">
     <p class="kicker">Pratinjau desain</p>
-    <h1>Mockup tiga arah untuk Dessert by Anyha.</h1>
-    <p class="pilih__intro">Isi dan foto sama di ketiganya. Yang berbeda palet, tipografi, susunan bagian, dan cara menonjolkan pemesanan. Pilih satu, lalu arah itu yang dibangun penuh.</p>
+    <h1>Mockup empat arah untuk Dessert by Anyha.</h1>
+    <p class="pilih__intro">Isi dan foto sama di keempatnya. Yang berbeda palet, tipografi, susunan bagian, dan cara menonjolkan pemesanan. Pilih satu, lalu arah itu yang dibangun penuh.</p>
     <div class="pilih__grid">{''.join(kartu)}</div>
     <div class="pilih__catatan">
       <div>
-        <h2>Yang sama di ketiganya</h2>
+        <h2>Yang sama di keempatnya</h2>
         <ul>
           <li>Empat halaman: beranda, menu, tentang, cara pesan.</li>
+          <li>Tiga menu dengan harga dan isian lengkap dari pemilik.</li>
           <li>Data menu dan foto berasal dari berkas yang dikirim pemilik.</li>
-          <li>Tombol pesan menuju DM Instagram.</li>
-          <li>Harga dan nomor WhatsApp menunggu konfirmasi pemilik.</li>
+          <li>Tombol pesan menuju DM Instagram, lokasi di Simpang IV Sipin.</li>
+          <li>Nomor WhatsApp dan jam pesanan menunggu konfirmasi pemilik.</li>
         </ul>
         <p>{escape(SITE['catatan_pratinjau'])}</p>
       </div>
@@ -1127,7 +1515,7 @@ def halaman_pemilih(g):
 def halaman_404():
     return kepala(
         "Halaman tidak ditemukan, Mockup Dessert by Anyha",
-        "Halaman yang dicari tidak ada. Kembali ke pratinjau tiga arah desain.",
+        "Halaman yang dicari tidak ada. Kembali ke pratinjau empat arah desain.",
         "pemilih.css", "#F7F1E4", PEMILIH_FONTS, "/404.html", "favicon.png",
     ) + """
 <main id="utama" class="pilih">
@@ -1150,7 +1538,7 @@ def tulis(path, isi):
 
 
 def salin_aset():
-    for nama in ("arah-1.css", "arah-2.css", "arah-3.css", "pemilih.css"):
+    for nama in ("arah-1.css", "arah-2.css", "arah-3.css", "arah-4.css", "pemilih.css"):
         shutil.copy(os.path.join(ROOT, "assets", "css", nama), os.path.join(DIST, "assets", "css", nama))
     shutil.copy(os.path.join(ROOT, "assets", "js", "site.js"), os.path.join(DIST, "assets", "js", "site.js"))
 
@@ -1169,7 +1557,7 @@ def main():
 
     tulis("arah-1/index.html", arah_1(g))
     tulis("arah-1/menu/index.html", halaman_1(
-        "menu", "Menu " + USAHA, DESKRIPSI["menu"] + " Harga menyusul.", "/arah-1/menu/", isi_menu_1(g)))
+        "menu", "Menu " + USAHA, DESKRIPSI["menu"], "/arah-1/menu/", isi_menu_1(g)))
     tulis("arah-1/tentang/index.html", halaman_1(
         "tentang", "Tentang " + USAHA, DESKRIPSI["tentang"], "/arah-1/tentang/", isi_tentang_1(g)))
     tulis("arah-1/kontak/index.html", halaman_1(
@@ -1177,7 +1565,7 @@ def main():
 
     tulis("arah-2/index.html", arah_2(g))
     tulis("arah-2/menu/index.html", halaman_2(
-        "menu", "Menu " + USAHA, DESKRIPSI["menu"] + " Harga menyusul.", "/arah-2/menu/", isi_menu_2(g)))
+        "menu", "Menu " + USAHA, DESKRIPSI["menu"], "/arah-2/menu/", isi_menu_2(g)))
     tulis("arah-2/tentang/index.html", halaman_2(
         "tentang", "Cerita " + USAHA, DESKRIPSI["tentang"], "/arah-2/tentang/", isi_tentang_2(g)))
     tulis("arah-2/kontak/index.html", halaman_2(
@@ -1185,16 +1573,24 @@ def main():
 
     tulis("arah-3/index.html", arah_3(g))
     tulis("arah-3/menu/index.html", halaman_3(
-        "menu", "Menu " + USAHA, DESKRIPSI["menu"] + " Harga menyusul.", "/arah-3/menu/", isi_menu_3(g)))
+        "menu", "Menu " + USAHA, DESKRIPSI["menu"], "/arah-3/menu/", isi_menu_3(g)))
     tulis("arah-3/tentang/index.html", halaman_3(
         "tentang", "Tentang " + USAHA, DESKRIPSI["tentang"], "/arah-3/tentang/", isi_tentang_3(g)))
     tulis("arah-3/kontak/index.html", halaman_3(
         "kontak", "Pesan " + USAHA, DESKRIPSI["kontak"], "/arah-3/kontak/", isi_kontak_3()))
 
+    tulis("arah-4/index.html", arah_4(g))
+    tulis("arah-4/menu/index.html", halaman_4(
+        "menu", "Menu " + USAHA, DESKRIPSI["menu"], "/arah-4/menu/", isi_menu_4(g)))
+    tulis("arah-4/tentang/index.html", halaman_4(
+        "tentang", "Tentang " + USAHA, DESKRIPSI["tentang"], "/arah-4/tentang/", isi_tentang_4(g)))
+    tulis("arah-4/kontak/index.html", halaman_4(
+        "kontak", "Pesan " + USAHA, DESKRIPSI["kontak"], "/arah-4/kontak/", isi_kontak_4()))
+
     salin_aset()
 
     rute = ["/"]
-    for n in (1, 2, 3):
+    for n in (1, 2, 3, 4):
         rute += ["/arah-%d/" % n, "/arah-%d/menu/" % n, "/arah-%d/tentang/" % n, "/arah-%d/kontak/" % n]
 
     if SITE.get("url"):

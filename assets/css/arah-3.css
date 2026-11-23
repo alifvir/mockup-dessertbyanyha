@@ -171,6 +171,19 @@ dialog.zoom img { max-height: 88vh; width: auto; }
 .daftar-menu__isi { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; grid-column: 1; }
 .daftar-menu h3 { font-size: 1.6rem; }
 .daftar-menu__harga { font-size: .8rem; letter-spacing: .12em; color: var(--terakota); text-transform: uppercase; }
+
+/* rincian isian */
+.rincian-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .4rem 1.75rem; grid-column: 1; margin-top: .15rem; }
+.rincian-3__judul {
+  font-size: .64rem; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--terakota); margin-bottom: .2rem;
+}
+.rincian-3__daftar { list-style: none; margin: 0; padding: 0; }
+.rincian-3__daftar li { font-size: .82rem; color: var(--redup); line-height: 1.55; }
+.daftar-menu > li > p.rincian-3__catatan {
+  grid-column: 1 / -1; font-size: .78rem; color: var(--redup);
+  font-style: italic; margin-top: .3rem;
+}
 .daftar-menu > li > p { color: var(--redup); font-size: .95rem; margin: 0; grid-column: 1; }
 .daftar-menu__tag { list-style: none; display: flex; flex-wrap: wrap; gap: 0 1rem; margin: 0; padding: 0; font-size: .82rem; color: var(--redup); grid-column: 1; }
 .daftar-menu__tag li::after { content: "·"; margin-left: 1rem; color: var(--garis); }

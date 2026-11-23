@@ -1,22 +1,61 @@
 [
   {
-    "slug": "mango-cup",
-    "nama": "Mango Dessert Cup",
+    "slug": "mango-sago",
+    "nama": "Mango Sago",
     "label": "Signature",
-    "deskripsi": "Cup bening berisi potongan mangga, sagu mutiara, dan susu. Disajikan dingin, dimakan langsung dari cupnya.",
-    "isi": ["Mangga potong", "Sagu mutiara", "Susu"],
-    "harga": null,
-    "foto": "cup-redup.webp",
-    "foto_alt": "Dessert cup mangga dalam cup plastik bening, disajikan di atas piring batu"
+    "harga": "Rp12.000",
+    "deskripsi": "Mangga pure dengan potongan buah mangga, jelly, sagu mutiara, dan nata de coco di bawah kuah susu yang creamy. Paling enak disantap dingin, boleh ditambah es batu.",
+    "isi": ["Mangga pure", "Sagu mutiara", "Nata de coco"],
+    "kelompok": [
+      {
+        "judul": "Isian",
+        "isi": ["Mangga pure", "Potongan buah mangga", "Jelly mangga", "Sagu mutiara", "Nata de coco", "Kuah creamy susu"]
+      }
+    ],
+    "catatan": "Disantap dingin, atau tambahkan es batu kalau ingin lebih segar.",
+    "foto": "mango-sago",
+    "foto_alt": "Mango Sago dalam cup bening, lapisan mangga oranye dengan kuah susu creamy di atasnya"
   },
   {
     "slug": "fruit-punch",
     "nama": "Fruit Punch",
     "label": "Minuman",
-    "deskripsi": "Minuman campuran buah dalam botol. Labelnya menuliskan mix fruit, fresh, dan less sugar.",
-    "isi": ["Campuran buah", "Fresh", "Less sugar"],
-    "harga": null,
-    "foto": "punch.webp",
-    "foto_alt": "Botol fruit punch oranye dengan label Fruit Punch by Anyha"
+    "harga": "Rp12.000",
+    "deskripsi": "Minuman segar dari irisan buah dan jus segar. Cocok dinikmati dingin sebagai penghilang dahaga saat cuaca panas.",
+    "isi": ["Jus jeruk", "Air soda", "Buah segar"],
+    "kelompok": [
+      {
+        "judul": "Jus",
+        "isi": ["Jus jeruk", "Jus nanas", "Jus lemon", "Perasan jeruk nipis", "Air soda"]
+      },
+      {
+        "judul": "Isian buah",
+        "isi": ["Nanas", "Jeruk Sunkist", "Kiwi", "Strawberry", "Daun mint"]
+      }
+    ],
+    "catatan": "Paling enak diminum dingin, langsung dari botolnya.",
+    "foto": "fruit-punch",
+    "foto_alt": "Botol Fruit Punch oranye dengan label Fruit Punch by Anyha, tampak irisan buah di dalamnya"
+  },
+  {
+    "slug": "asinan-kiamboy",
+    "nama": "Asinan Kiamboy",
+    "label": "Asinan buah",
+    "harga": "Rp15.000",
+    "deskripsi": "Asinan buah dengan kuah segar berasa manis, pedas, asin, dan gurih. Dimakan dingin, pas untuk melepas dahaga saat cuaca panas.",
+    "isi": ["Buah kiamboy", "Anggur muscat", "Kuweni"],
+    "kelompok": [
+      {
+        "judul": "Isian buah",
+        "isi": ["Kuweni", "Anggur muscat", "Salak", "Lengkeng", "Nanas", "Jeruk Songkit", "Buah kiamboy"]
+      },
+      {
+        "judul": "Rasa",
+        "isi": ["Segar", "Manis", "Pedas", "Asin", "Gurih"]
+      }
+    ],
+    "catatan": "Paling nikmat dinikmati dalam keadaan dingin.",
+    "foto": "asinan",
+    "foto_alt": "Asinan Kiamboy dalam cup bening berisi potongan buah dan kuah, digenggam dengan latar dinding kuning"
   }
 ]
