@@ -38,6 +38,8 @@ for p in sorted(halaman):
         masalah.append("%s: ada em dash" % nama)
     if 'href="#"' in html:
         masalah.append("%s: ada tautan kosong" % nama)
+    if 'load="' in html:
+        masalah.append("%s: atribut load= bukan loading=" % nama)
     if 'rel="noopener"' not in html and 'target="_blank"' in html:
         masalah.append("%s: target blank tanpa noopener" % nama)
     for href in re.findall(r'href="(/[^"#?]*)"', html):

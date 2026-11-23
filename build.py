@@ -184,7 +184,7 @@ def siapkan_gambar():
 
 
 def gambar(d, alt, kelas="", lazy=True, prioritas=False):
-    muat = 'load="eager" ' if prioritas else ""
+    muat = 'loading="eager" ' if prioritas else ""
     if lazy and not prioritas:
         muat = 'loading="lazy" decoding="async" '
     return '<img src="/%s" alt="%s" width="%d" height="%d" %s%s>' % (
