@@ -296,6 +296,8 @@ dialog.zoom img { max-height: 88vh; width: auto; }
   .aksi .tombol { flex: 1 1 100%; }
   .pita ul { gap: .4rem 1.2rem; font-size: .7rem; }
   .kaki__grid, .kaki__bawah, .cta__isi, .d-catatan { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .kaki__merek { width: auto; }
+  .kaki__merek img { width: 210px; max-width: 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {

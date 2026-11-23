@@ -341,7 +341,7 @@ def tutup(melayang=True):
     if melayang:
         tombol = ('<a class="wa-melayang" href="%s" target="_blank" rel="noopener" '
                   'aria-label="Pesan lewat WhatsApp %s">%s</a>\n'
-                  % (escape(tautan_pesan()), escape(USAHA), IKON_IG))
+                  % (escape(tautan_pesan()), escape(USAHA), IKON_WA if SITE.get("wa") else IKON_IG))
     return f"""
 {tombol}<script src="/assets/js/site.js" defer></script>
 </body>
@@ -1265,11 +1265,13 @@ def arah_4(g):
     <figure class="hero__foto">
       {gambar(g["a4_hero"], "Mango Sago dengan lapisan mangga dan kuah susu di atas piring batu, disinari matahari pagi", prioritas=True)}
       <button class="tombol-zoom" type="button" data-zoom="/{g['a4_hero']['berkas']}" data-zoom-alt="Mango Sago dengan lapisan susu" aria-label="Perbesar foto Mango Sago">{IKON_ZOOM}</button>
-      <figcaption class="stiker">
-        <span class="stiker__ikon" aria-hidden="true">A</span>
-        <span class="stiker__teks"><strong>Segar, asli, nikmat</strong><span>Tiga menu, satu standar</span></span>
-      </figcaption>
-      <figcaption class="stiker stiker--kanan"><span class="stiker__teks"><strong>Dibuat saat dipesan</strong><span>Bukan stok kulkas</span></span></figcaption>
+      <div class="stiker-grup">
+        <figcaption class="stiker">
+          <span class="stiker__ikon" aria-hidden="true">A</span>
+          <span class="stiker__teks"><strong>Segar, asli, nikmat</strong><span>Bahan dipilih</span></span>
+        </figcaption>
+        <figcaption class="stiker stiker--kanan"><span class="stiker__teks"><strong>Dibuat saat dipesan</strong><span>Bukan stok kulkas</span></span></figcaption>
+      </div>
     </figure>
   </div>
 </section>

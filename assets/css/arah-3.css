@@ -295,6 +295,8 @@ dialog.zoom img { max-height: 88vh; width: auto; }
   .hero__foto img { aspect-ratio: 4 / 5; }
   .aksi .tombol { flex: 1 1 100%; }
   .kaki__isi, .d-catatan { flex-direction: column; align-items: flex-start; gap: .75rem; }
+  .kaki__merek { width: auto; }
+  .kaki__merek img { width: 200px; max-width: 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -122,12 +122,13 @@ a { color: inherit; }
 .hero h1 { font-size: clamp(2.8rem, 6vw, 4.6rem); letter-spacing: -.028em; line-height: .98; }
 .hero h1 em { display: block; font-style: italic; color: var(--oranye); font-weight: 400; }
 .hero__p { color: var(--redup); font-size: 1.06rem; max-width: 34rem; margin-top: 1.4rem; }
-.hero__foto { position: relative; }
+.hero__foto { position: relative; margin: 0; }
 .hero__foto img {
   width: 100%; aspect-ratio: 4 / 3; object-fit: cover;
   border-radius: 34px; border: 9px solid var(--putih); box-shadow: var(--bayang);
 }
 /* stiker yang keluar bingkai */
+.stiker-grup { display: contents; }
 .stiker {
   position: absolute; left: -26px; bottom: -26px;
   display: flex; align-items: center; gap: .6rem;
@@ -361,12 +362,20 @@ a { color: inherit; }
   .hero__foto img { border-width: 6px; border-radius: 22px; }
   /* stiker dipindah ke bawah foto, bukan menutupi produk */
   .hero__foto figcaption.stiker {
-    position: static; margin-top: .9rem; width: fit-content; max-width: 100%;
+    position: static; margin-top: .75rem; width: fit-content; max-width: 100%;
     padding: 10px 14px; box-shadow: 0 8px 22px rgba(0, 0, 0, .08);
   }
-  .hero__foto { display: flex; flex-direction: column; align-items: flex-start; }
-  .hero__foto figcaption.stiker + figcaption.stiker { margin-top: .5rem; }
+  .hero__foto { display: flex; flex-direction: column; align-items: stretch; }
+  .hero__foto img { width: 100%; align-self: stretch; }
+  .stiker-grup { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin-top: .75rem; align-items: stretch; }
+  .stiker-grup .stiker { margin-top: 0; width: 100%; padding: 12px; align-items: flex-start; }
+  .stiker-grup .stiker__ikon { width: 30px; height: 30px; font-size: .85rem; flex: 0 0 30px; }
+  .stiker-grup .stiker__teks { min-width: 0; }
+  .stiker-grup .stiker__teks strong { font-size: .76rem; line-height: 1.25; }
+  .stiker-grup .stiker__teks span { font-size: .66rem; line-height: 1.3; }
   .stiker--kanan { right: auto; left: 0; top: auto; }
+  /* tombol zoom menempel di foto, bukan di area stiker */
+  .hero__foto .tombol-zoom { top: .6rem; right: .6rem; bottom: auto; }
   .produk-grid, .unggul-grid, .grid3 { grid-template-columns: 1fr; }
   .peta { aspect-ratio: 3 / 2; }
   .strip ul { grid-template-columns: repeat(2, 1fr); }
@@ -400,5 +409,8 @@ a { color: inherit; }
   .aksi .tombol { flex: 1 1 100%; }
   .produk__isi { padding: 1.25rem 1.15rem 1.35rem; }
   .produk__harga { font-size: 1.6rem; }
-  .kaki__merek img { width: 160px; }
+  .kaki__merek { width: auto; margin-bottom: .1rem; }
+  .kaki__merek img { display: block; width: 250px; max-width: 100%; }
+  .kaki__grid { gap: 1.5rem; }
+  .kaki ul { gap: .1rem; }
 }
