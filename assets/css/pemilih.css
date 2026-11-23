@@ -1,0 +1,108 @@
+:root {
+  --kertas: #F7F1E4;
+  --kartu: #FFFDF8;
+  --tinta: #2A1D15;
+  --redup: #6E5B4E;
+  --coklat: #8A4A12;
+  --garis: #E1D3BE;
+  --serif: "Fraunces", Georgia, serif;
+  --sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --lebar: 1080px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--kertas);
+  color: var(--tinta);
+  font-family: var(--sans);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+p { margin: 0; }
+img { max-width: 100%; height: auto; display: block; }
+h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 0; }
+
+:focus-visible { outline: 3px solid var(--coklat); outline-offset: 3px; }
+
+.wrap { width: 100%; max-width: var(--lebar); margin-inline: auto; padding-inline: 1.25rem; }
+
+.pilih { padding-block: 3.5rem 4rem; }
+.kicker {
+  font-size: .76rem; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--coklat); font-weight: 700; margin-bottom: 1rem;
+}
+.pilih h1 { font-size: clamp(2rem, 4.6vw, 3.2rem); letter-spacing: -.02em; max-width: 30ch; }
+.pilih__intro { color: var(--redup); max-width: 46rem; margin-top: 1.1rem; font-size: 1.05rem; }
+
+.pilih__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 2.75rem; }
+
+.kartu {
+  background: var(--kartu); border: 1px solid var(--garis); border-radius: 20px;
+  padding: 1.5rem; display: flex; flex-direction: column; gap: .9rem;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.kartu:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(42, 29, 21, .1); }
+.kartu__nomor {
+  font-family: var(--serif); font-size: 2.4rem; color: var(--coklat);
+  line-height: 1; margin: 0;
+}
+.kartu h2 { font-size: 1.55rem; }
+.kartu__dial { font-size: .74rem; letter-spacing: .14em; text-transform: uppercase; color: var(--redup); }
+.kartu__ringkas { font-size: .95rem; color: var(--tinta); }
+.kartu__cocok { font-size: .88rem; color: var(--redup); }
+
+.palet { list-style: none; margin: 0; padding: 0; display: grid; gap: .4rem; }
+.palet li { display: flex; align-items: center; gap: .55rem; font-size: .78rem; color: var(--redup); }
+.contoh { width: 18px; height: 18px; border-radius: 5px; border: 1px solid rgba(42, 29, 21, .12); }
+.palet code { font-size: .74rem; }
+
+.tombol {
+  display: inline-flex; align-items: center; justify-content: center; margin-top: .35rem;
+  min-height: 46px; padding: .7rem 1.2rem; border-radius: 999px;
+  background: var(--tinta); color: var(--kartu); text-decoration: none;
+  font-size: .92rem; font-weight: 600;
+  transition: background .18s ease, transform .18s ease;
+}
+.tombol:hover { background: var(--coklat); transform: translateY(-2px); }
+
+.pilih__catatan {
+  margin-top: 3rem; border-top: 1px solid var(--garis); padding-top: 1.75rem;
+  display: grid; grid-template-columns: 1fr 1.2fr; gap: 2rem;
+}
+.pilih__catatan h2 { font-size: 1.3rem; }
+.pilih__catatan ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; }
+.pilih__catatan li { font-size: .92rem; color: var(--redup); padding-left: 1.1rem; position: relative; }
+.pilih__catatan li::before { content: ""; position: absolute; left: 0; top: .65em; width: 5px; height: 5px; background: var(--coklat); border-radius: 50%; }
+.pilih__catatan p { font-size: .86rem; color: var(--redup); margin-top: 1rem; }
+
+.kaki { border-top: 1px solid var(--garis); padding-block: 1.75rem; }
+.kaki__isi { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; font-size: .86rem; color: var(--redup); }
+.kaki a { display: inline-flex; align-items: center; min-height: 44px; color: var(--coklat); text-decoration: none; }
+.kaki a:hover { color: var(--tinta); text-decoration: underline; }
+
+.lewati {
+  position: absolute; left: 1rem; top: -4rem; z-index: 30;
+  display: inline-flex; align-items: center; min-height: 44px;
+  background: var(--tinta); color: var(--kartu); padding: .75rem 1.25rem;
+  border-radius: 999px; font-size: .9rem;
+}
+.lewati:focus { top: 1rem; }
+
+.wa-melayang {
+  position: fixed; right: 1.1rem; bottom: 1.1rem; z-index: 25;
+  display: grid; place-items: center; width: 54px; height: 54px; min-width: 54px; min-height: 54px;
+  border-radius: 999px; background: var(--coklat); color: #fff;
+  box-shadow: 0 10px 26px rgba(42, 29, 21, .24);
+}
+.wa-melayang:hover { background: var(--tinta); }
+
+@media (min-width: 960px) { .wa-melayang { display: none; } }
+
+@media (max-width: 900px) {
+  .pilih__grid { grid-template-columns: 1fr; }
+  .pilih__catatan { grid-template-columns: 1fr; gap: 1.25rem; }
+}

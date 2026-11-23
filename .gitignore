@@ -1,0 +1,6 @@
+dist/
+pratinjau/
+pratinjau.log
+pratinjau.err.log
+__pycache__/
+*.pyc

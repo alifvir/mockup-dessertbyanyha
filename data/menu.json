@@ -1,0 +1,22 @@
+[
+  {
+    "slug": "mango-cup",
+    "nama": "Mango Dessert Cup",
+    "label": "Signature",
+    "deskripsi": "Cup bening berisi potongan mangga, sagu mutiara, dan susu. Disajikan dingin, dimakan langsung dari cupnya.",
+    "isi": ["Mangga potong", "Sagu mutiara", "Susu"],
+    "harga": null,
+    "foto": "cup-redup.webp",
+    "foto_alt": "Dessert cup mangga dalam cup plastik bening, disajikan di atas piring batu"
+  },
+  {
+    "slug": "fruit-punch",
+    "nama": "Fruit Punch",
+    "label": "Minuman",
+    "deskripsi": "Minuman campuran buah dalam botol. Labelnya menuliskan mix fruit, fresh, dan less sugar.",
+    "isi": ["Campuran buah", "Fresh", "Less sugar"],
+    "harga": null,
+    "foto": "punch.webp",
+    "foto_alt": "Botol fruit punch oranye dengan label Fruit Punch by Anyha"
+  }
+]
