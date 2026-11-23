@@ -92,11 +92,16 @@ hapus `sumber_bersih(...)` jadi `sumber(...)`.
 
 ## Deploy
 
-Belum di-deploy. Setelah pemilik memilih arah, urutannya: repo GitHub
-`alifvir/dessertbyanyha` dulu, baru proyek Cloudflare Pages dengan Connect to Git.
+Sudah live: https://dessertbyanyha.pages.dev
+
+Repo: `alifvir/dessertbyanyha` (publik, branch `main`). Proyek Cloudflare Pages
+`dessertbyanyha` dibuat lewat Connect to Git, jadi setiap push ke `main` langsung
+membangun ulang. Setelan yang dipakai:
 
 - Build command: `pip install -r requirements.txt && python build.py`
 - Build output directory: `dist`
 - Branch: `main`
 
-Setelah domain ada, isi `url` di `data/site.json` lalu build ulang.
+`dist/` diabaikan git karena Pages membangunnya sendiri. `data/site.json` sudah
+memuat `url`, jadi canonical, `og:url`, dan `sitemap.xml` ikut dibuat tiap build.
+Kalau domain klien ditambahkan nanti, ganti `url` lalu build dan push.
