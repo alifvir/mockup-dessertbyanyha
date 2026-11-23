@@ -94,14 +94,29 @@ hapus `sumber_bersih(...)` jadi `sumber(...)`.
 
 Sudah live: https://dessertbyanyha.pages.dev
 
-Repo: `alifvir/dessertbyanyha` (publik, branch `main`). Proyek Cloudflare Pages
-`dessertbyanyha` dibuat lewat Connect to Git, jadi setiap push ke `main` langsung
-membangun ulang. Setelan yang dipakai:
+Semua langkah deploy (repo, proyek Pages, memantau build, membuktikan isi live,
+domain sendiri) ada di `DEPLOY.md`. Sesi berikutnya cukup bilang "deploy github
+dan pages.dev" dan berkas itu yang dibaca.
+
+Ringkasnya:
 
 - Build command: `pip install -r requirements.txt && python build.py`
 - Build output directory: `dist`
 - Branch: `main`
+- `git push` ke `main` = rilis otomatis
 
 `dist/` diabaikan git karena Pages membangunnya sendiri. `data/site.json` sudah
 memuat `url`, jadi canonical, `og:url`, dan `sitemap.xml` ikut dibuat tiap build.
-Kalau domain klien ditambahkan nanti, ganti `url` lalu build dan push.
+
+## Status mockup
+
+Situs ini masih mockup. Nama tampil sengaja diberi awalan "Mockup" di header,
+judul tab, dan footer, plus pita "Mockup desain" di atas setiap halaman.
+
+| Kunci | Nilai sekarang | Dipakai untuk |
+|---|---|---|
+| `nama` di `data/site.json` | `Mockup Dessert by Anyha` | header, footer, judul tab, `og:site_name` |
+| `nama_usaha` di `data/site.json` | `Dessert by Anyha` | teks cerita, copyright, aria-label |
+
+Saat situs jadi resmi, ganti `nama` kembali ke `Dessert by Anyha` dan buang
+`pita_mockup()` dari `build.py`. Langkah lengkapnya di `DEPLOY.md` bagian 7.

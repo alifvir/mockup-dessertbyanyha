@@ -29,6 +29,9 @@ IMG = os.path.join(DIST, "assets", "img")
 SITE = json.load(open(os.path.join(ROOT, "data", "site.json"), encoding="utf-8-sig"))
 MENU = json.load(open(os.path.join(ROOT, "data", "menu.json"), encoding="utf-8-sig"))
 
+NAMA = SITE["nama"]
+USAHA = SITE.get("nama_usaha") or SITE["nama"]
+
 FONTS = {
     1: "family=Fraunces:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700",
     2: "family=Anton&family=Plus+Jakarta+Sans:wght@400;500;700",
@@ -37,10 +40,10 @@ FONTS = {
 PEMILIH_FONTS = "family=Fraunces:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700"
 
 DESKRIPSI = {
-    "beranda": "Dessert cup mangga dan fruit punch buatan rumahan dari Dessert by Anyha. Lihat menunya, lalu pesan lewat Instagram.",
-    "menu": "Menu Dessert by Anyha: dessert cup mangga dan fruit punch. Pesan lewat Instagram.",
-    "tentang": "Cerita Dessert by Anyha, dessert rumahan yang diracik per pesanan.",
-    "kontak": "Cara pesan Dessert by Anyha lewat Instagram dan area pengiriman yang menyusul.",
+    "beranda": "Dessert cup mangga dan fruit punch buatan rumahan dari Dessert by Anyha. Lihat menunya, lalu pesan lewat Instagram. Halaman ini masih mockup desain.",
+    "menu": "Menu Dessert by Anyha: dessert cup mangga dan fruit punch. Pesan lewat Instagram. Halaman ini masih mockup desain.",
+    "tentang": "Cerita Dessert by Anyha, dessert rumahan yang diracik per pesanan. Halaman ini masih mockup desain.",
+    "kontak": "Cara pesan Dessert by Anyha lewat Instagram dan area pengiriman yang menyusul. Halaman ini masih mockup desain.",
 }
 
 IKON_IG = (
@@ -193,6 +196,14 @@ def gambar(d, alt, kelas="", lazy=True, prioritas=False):
 
 
 # ------------------------------------------------------------------ kepala dan kaki
+def pita_mockup():
+    return """
+<div class="pita-mockup" role="note">
+  <span>Mockup desain</span>
+  <p>Belum situs resmi. Harga, nomor WhatsApp, dan area kirim masih menunggu pemilik.</p>
+</div>"""
+
+
 def kepala(judul, deskripsi, css, tema, fonts, kanonikal, ikon):
     kanon = og_url = ""
     if SITE.get("url"):
@@ -209,7 +220,7 @@ def kepala(judul, deskripsi, css, tema, fonts, kanonikal, ikon):
 {kanon}
 <meta property="og:type" content="website">
 <meta property="og:locale" content="id_ID">
-<meta property="og:site_name" content="Dessert by Anyha">
+<meta property="og:site_name" content="{escape(NAMA)}">
 <meta property="og:title" content="{escape(judul)}">
 <meta property="og:description" content="{escape(deskripsi)}">
 <meta property="og:image" content="/assets/img/og.jpg">
@@ -233,8 +244,8 @@ def tutup(melayang=True):
     tombol = ""
     if melayang:
         tombol = ('<a class="wa-melayang" href="%s" target="_blank" rel="noopener" '
-                  'aria-label="Pesan lewat Instagram Dessert by Anyha">%s</a>\n'
-                  % (escape(tautan_pesan()), IKON_IG))
+                  'aria-label="Pesan lewat Instagram %s">%s</a>\n'
+                  % (escape(tautan_pesan()), escape(USAHA), IKON_IG))
     return f"""
 {tombol}<script src="/assets/js/site.js" defer></script>
 </body>
@@ -247,7 +258,7 @@ def kaki(gaya):
 <footer class="kaki">
   <div class="wrap kaki__{'grid' if gaya == 1 else 'isi'}">
     <div>
-      <strong>Dessert by Anyha</strong>
+      <strong>{escape(NAMA)}</strong>
       <p>Dessert rumahan dari mangga pilihan dan campuran buah segar. Pesanan lewat Instagram.</p>
     </div>
     <div>
@@ -260,7 +271,7 @@ def kaki(gaya):
     </div>
   </div>
   <div class="wrap kaki__bawah">
-    <span>&copy; 2026 Dessert by Anyha.</span>
+    <span>&copy; 2026 {escape(USAHA)}.</span>
     <span>{escape(SITE['catatan_pratinjau'])}</span>
   </div>
 </footer>"""
@@ -285,11 +296,11 @@ def nav_1(aktif):
     def item(kunci, href, teks):
         tanda = ' aria-current="page"' if aktif == kunci else ""
         return '<li><a href="%s"%s>%s</a></li>' % (href, tanda, teks)
-    return f"""
+    return pita_mockup() + f"""
 <header class="kepala">
   <div class="wrap kepala__bar">
     <a class="merek" href="/arah-1/">
-      <strong>Dessert by Anyha</strong>
+      <strong>{escape(NAMA)}</strong>
       <span>Rumahan</span>
     </a>
     <button class="menu-tombol" type="button" data-nav-tombol aria-expanded="false" aria-controls="nav-utama">
@@ -345,7 +356,7 @@ def langkah_1():
 
 def arah_1(g):
     return kepala(
-        "Dessert by Anyha, dessert cup mangga rumahan",
+        "Mockup Dessert by Anyha, dessert cup mangga rumahan",
         DESKRIPSI["beranda"] + " Dua menu: Mango Dessert Cup dan Fruit Punch.",
         "arah-1.css", "#FBF4E7", FONTS[1], "/arah-1/", "favicon.png",
     ) + nav_1("beranda") + f"""
@@ -538,10 +549,10 @@ def nav_2(aktif):
     def item(kunci, href, teks):
         tanda = ' aria-current="page"' if aktif == kunci else ""
         return '<li><a href="%s"%s>%s</a></li>' % (href, tanda, teks)
-    return f"""
+    return pita_mockup() + f"""
 <header class="kepala">
   <div class="wrap kepala__bar">
-    <a class="merek" href="/arah-2/"><strong>Anyha</strong><span>Dessert</span></a>
+    <a class="merek" href="/arah-2/"><strong>Mockup</strong><span>Anyha Dessert</span></a>
     <button class="menu-tombol" type="button" data-nav-tombol aria-expanded="false" aria-controls="nav-utama">
       <span class="menu-tombol__garis" aria-hidden="true"></span>Menu
     </button>
@@ -597,7 +608,7 @@ def langkah_2():
 
 def arah_2(g):
     return kepala(
-        "Dessert by Anyha, dessert cup mangga dan fruit punch",
+        "Mockup Dessert by Anyha, dessert cup mangga dan fruit punch",
         DESKRIPSI["beranda"] + " Pesan lewat Instagram.",
         "arah-2.css", "#14100E", FONTS[2], "/arah-2/", "favicon-2.png",
     ) + nav_2("beranda") + f"""
@@ -811,10 +822,10 @@ def nav_3(aktif):
     def item(kunci, href, teks):
         tanda = ' aria-current="page"' if aktif == kunci else ""
         return '<li><a href="%s"%s>%s</a></li>' % (href, tanda, teks)
-    return f"""
+    return pita_mockup() + f"""
 <header class="kepala">
   <div class="wrap kepala__bar">
-    <a class="merek" href="/arah-3/"><strong>Dessert by Anyha</strong><span>Est. rumahan</span></a>
+    <a class="merek" href="/arah-3/"><strong>{escape(NAMA)}</strong><span>Est. rumahan</span></a>
     <button class="menu-tombol" type="button" data-nav-tombol aria-expanded="false" aria-controls="nav-utama">
       <span class="menu-tombol__garis" aria-hidden="true"></span>Menu
     </button>
@@ -867,7 +878,7 @@ def langkah_3():
 
 def arah_3(g):
     return kepala(
-        "Dessert by Anyha, dessert cup mangga",
+        "Mockup Dessert by Anyha, dessert cup mangga",
         DESKRIPSI["beranda"] + " Dua menu: Mango Dessert Cup dan Fruit Punch.",
         "arah-3.css", "#F5F2EA", FONTS[3], "/arah-3/", "favicon-3.png",
     ) + nav_3("beranda") + f"""
@@ -1077,14 +1088,14 @@ def halaman_pemilih(g):
         <a class="tombol" href="/{a['slug']}/">Buka mockup {escape(a['nama'])}</a>
       </article>""")
     return kepala(
-        "Tiga arah desain untuk Dessert by Anyha",
+        "Mockup tiga arah desain untuk Dessert by Anyha",
         "Pratinjau tiga arah desain situs Dessert by Anyha: Mangga Mentega, Pasar Malam, dan Washi. Isi dan foto sama, arah visual berbeda.",
         "pemilih.css", "#F7F1E4", PEMILIH_FONTS, "/", "favicon.png",
-    ) + f"""
+    ) + pita_mockup() + f"""
 <main id="utama" class="pilih">
   <div class="wrap">
     <p class="kicker">Pratinjau desain</p>
-    <h1>Tiga arah untuk Dessert by Anyha.</h1>
+    <h1>Mockup tiga arah untuk Dessert by Anyha.</h1>
     <p class="pilih__intro">Isi dan foto sama di ketiganya. Yang berbeda palet, tipografi, susunan bagian, dan cara menonjolkan pemesanan. Pilih satu, lalu arah itu yang dibangun penuh.</p>
     <div class="pilih__grid">{''.join(kartu)}</div>
     <div class="pilih__catatan">
@@ -1106,7 +1117,7 @@ def halaman_pemilih(g):
 </main>
 <footer class="kaki">
   <div class="wrap kaki__isi">
-    <p>Dessert by Anyha / pratinjau desain</p>
+    <p>{escape(NAMA)} / pratinjau desain</p>
     <p><a href="{escape(SITE['instagram'])}" target="_blank" rel="noopener">Instagram {escape(SITE['handle'])}</a></p>
   </div>
 </footer>
@@ -1115,7 +1126,7 @@ def halaman_pemilih(g):
 
 def halaman_404():
     return kepala(
-        "Halaman tidak ditemukan, Dessert by Anyha",
+        "Halaman tidak ditemukan, Mockup Dessert by Anyha",
         "Halaman yang dicari tidak ada. Kembali ke pratinjau tiga arah desain.",
         "pemilih.css", "#F7F1E4", PEMILIH_FONTS, "/404.html", "favicon.png",
     ) + """
@@ -1158,27 +1169,27 @@ def main():
 
     tulis("arah-1/index.html", arah_1(g))
     tulis("arah-1/menu/index.html", halaman_1(
-        "menu", "Menu Dessert by Anyha", DESKRIPSI["menu"] + " Harga menyusul.", "/arah-1/menu/", isi_menu_1(g)))
+        "menu", "Menu " + USAHA, DESKRIPSI["menu"] + " Harga menyusul.", "/arah-1/menu/", isi_menu_1(g)))
     tulis("arah-1/tentang/index.html", halaman_1(
-        "tentang", "Tentang Dessert by Anyha", DESKRIPSI["tentang"], "/arah-1/tentang/", isi_tentang_1(g)))
+        "tentang", "Tentang " + USAHA, DESKRIPSI["tentang"], "/arah-1/tentang/", isi_tentang_1(g)))
     tulis("arah-1/kontak/index.html", halaman_1(
-        "kontak", "Cara pesan Dessert by Anyha", DESKRIPSI["kontak"], "/arah-1/kontak/", isi_kontak_1()))
+        "kontak", "Cara pesan " + USAHA, DESKRIPSI["kontak"], "/arah-1/kontak/", isi_kontak_1()))
 
     tulis("arah-2/index.html", arah_2(g))
     tulis("arah-2/menu/index.html", halaman_2(
-        "menu", "Menu Dessert by Anyha", DESKRIPSI["menu"] + " Harga menyusul.", "/arah-2/menu/", isi_menu_2(g)))
+        "menu", "Menu " + USAHA, DESKRIPSI["menu"] + " Harga menyusul.", "/arah-2/menu/", isi_menu_2(g)))
     tulis("arah-2/tentang/index.html", halaman_2(
-        "tentang", "Cerita Dessert by Anyha", DESKRIPSI["tentang"], "/arah-2/tentang/", isi_tentang_2(g)))
+        "tentang", "Cerita " + USAHA, DESKRIPSI["tentang"], "/arah-2/tentang/", isi_tentang_2(g)))
     tulis("arah-2/kontak/index.html", halaman_2(
-        "kontak", "Order Dessert by Anyha", DESKRIPSI["kontak"], "/arah-2/kontak/", isi_kontak_2()))
+        "kontak", "Order " + USAHA, DESKRIPSI["kontak"], "/arah-2/kontak/", isi_kontak_2()))
 
     tulis("arah-3/index.html", arah_3(g))
     tulis("arah-3/menu/index.html", halaman_3(
-        "menu", "Menu Dessert by Anyha", DESKRIPSI["menu"] + " Harga menyusul.", "/arah-3/menu/", isi_menu_3(g)))
+        "menu", "Menu " + USAHA, DESKRIPSI["menu"] + " Harga menyusul.", "/arah-3/menu/", isi_menu_3(g)))
     tulis("arah-3/tentang/index.html", halaman_3(
-        "tentang", "Tentang Dessert by Anyha", DESKRIPSI["tentang"], "/arah-3/tentang/", isi_tentang_3(g)))
+        "tentang", "Tentang " + USAHA, DESKRIPSI["tentang"], "/arah-3/tentang/", isi_tentang_3(g)))
     tulis("arah-3/kontak/index.html", halaman_3(
-        "kontak", "Pesan Dessert by Anyha", DESKRIPSI["kontak"], "/arah-3/kontak/", isi_kontak_3()))
+        "kontak", "Pesan " + USAHA, DESKRIPSI["kontak"], "/arah-3/kontak/", isi_kontak_3()))
 
     salin_aset()
 

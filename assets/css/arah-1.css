@@ -45,6 +45,17 @@ a:hover { color: var(--tinta); }
 }
 .lewati:focus { top: 1rem; }
 
+/* pita status mockup */
+.pita-mockup {
+  display: flex; flex-wrap: wrap; align-items: center; gap: .35rem .8rem;
+  padding: .55rem 1.25rem; background: var(--mangga); color: var(--tinta);
+}
+.pita-mockup span {
+  font-size: .7rem; letter-spacing: .18em; text-transform: uppercase; font-weight: 700;
+  border: 1px solid var(--tinta); border-radius: 999px; padding: .15rem .6rem;
+}
+.pita-mockup p { font-size: .82rem; margin: 0; }
+
 /* kepala */
 .kepala {
   position: sticky; top: 0; z-index: 20;
@@ -273,6 +284,8 @@ dialog.zoom img { max-height: 88vh; width: auto; border-radius: 14px; }
 }
 
 @media (max-width: 560px) {
+  .merek strong { font-size: 1rem; }
+  .merek span { font-size: .66rem; letter-spacing: .1em; }
   .aksi .tombol { flex: 1 1 100%; }
   .kaki__grid, .kaki__bawah, .cta__isi { flex-direction: column; gap: 1rem; align-items: flex-start; }
   .d-kepala { padding-block: 2.25rem 1.5rem; }
