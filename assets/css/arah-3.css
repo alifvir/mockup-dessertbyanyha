@@ -226,8 +226,12 @@ dialog.zoom img { max-height: 88vh; width: auto; }
 /* kaki */
 .kaki { border-top: 1px solid var(--garis); padding-block: 2.25rem; }
 .kaki__isi { display: flex; justify-content: space-between; align-items: baseline; gap: 1.5rem; flex-wrap: wrap; }
+.kaki__isi > div { text-align: left; }
+.kaki__isi strong { display: block; }
 .kaki strong { font-family: var(--serif); font-size: 1.15rem; font-weight: 500; }
 .kaki p { color: var(--redup); font-size: .86rem; }
+.kaki__merek { display: block; width: fit-content; min-height: 44px; margin-bottom: .35rem; }
+.kaki__merek img { display: block; width: 158px; max-width: 100%; height: auto; }
 .kaki ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .25rem 1.2rem; }
 .kaki a { display: inline-flex; align-items: center; min-height: 44px; font-size: .88rem; }
 .kaki__bawah { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--garis); color: var(--redup); font-size: .8rem; }

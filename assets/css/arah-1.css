@@ -233,7 +233,11 @@ dialog.zoom img { max-height: 88vh; width: auto; border-radius: 14px; }
 /* kaki */
 .kaki { padding-block: 2.5rem; border-top: 1px solid var(--garis); }
 .kaki__grid { display: flex; justify-content: space-between; gap: 2rem; flex-wrap: wrap; align-items: flex-start; }
+.kaki__grid > div { text-align: left; }
+.kaki strong { display: block; }
 .kaki p { color: var(--redup); font-size: .9rem; }
+.kaki__merek { display: block; width: fit-content; min-height: 44px; margin-bottom: .35rem; }
+.kaki__merek img { display: block; width: 172px; max-width: 100%; height: auto; }
 .kaki strong { font-family: var(--serif); font-size: 1.05rem; color: var(--tinta); }
 .kaki ul { list-style: none; margin: .6rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: .25rem 1rem; }
 .kaki a { display: inline-flex; align-items: center; min-height: 44px; font-size: .9rem; }

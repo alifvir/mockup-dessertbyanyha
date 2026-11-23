@@ -41,10 +41,10 @@ FONTS = {
 PEMILIH_FONTS = "family=Fraunces:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700"
 
 DESKRIPSI = {
-    "beranda": "Mango Sago, Fruit Punch, dan Asinan Kiamboy buatan rumahan dari Dessert by Anyha di Simpang IV Sipin, Jambi. Lihat harga dan isiannya, lalu pesan lewat Instagram. Halaman ini masih mockup desain.",
-    "menu": "Menu Dessert by Anyha: Mango Sago Rp12.000, Fruit Punch Rp12.000, Asinan Kiamboy Rp15.000, lengkap dengan isiannya. Pesan lewat Instagram. Halaman ini masih mockup desain.",
-    "tentang": "Cerita Dessert by Anyha, dessert dan minuman rumahan di Simpang IV Sipin, Jambi, yang diracik per pesanan. Halaman ini masih mockup desain.",
-    "kontak": "Cara pesan Dessert by Anyha lewat Instagram, plus lokasi di Simpang IV Sipin, Jambi City. Halaman ini masih mockup desain.",
+    "beranda": "Mango Sago, Fruit Punch, dan Asinan Kiamboy buatan rumahan dari Dessert by Anyha di Simpang IV Sipin, Jambi. Lihat harga dan isiannya, lalu pesan lewat WhatsApp +62 852-1084-1113. Buka 09.00 sampai 17.00. Halaman ini masih mockup desain.",
+    "menu": "Menu Dessert by Anyha: Mango Sago Rp12.000, Fruit Punch Rp12.000, Asinan Kiamboy Rp15.000, lengkap dengan isiannya. Pesan lewat WhatsApp +62 852-1084-1113. Halaman ini masih mockup desain.",
+    "tentang": "Cerita Dessert by Anyha, dessert dan minuman rumahan di Simpang IV Sipin, Jambi, yang diracik per pesanan. Buka 09.00 sampai 17.00. Halaman ini masih mockup desain.",
+    "kontak": "Cara pesan Dessert by Anyha lewat WhatsApp +62 852-1084-1113, jam buka 09.00 sampai 17.00, plus peta lokasi di Simpang IV Sipin, Jambi City. Halaman ini masih mockup desain.",
 }
 
 IKON_IG = (
@@ -52,6 +52,12 @@ IKON_IG = (
     '<rect x="2.5" y="2.5" width="19" height="19" rx="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/>'
     '<circle cx="12" cy="12" r="4.4" fill="none" stroke="currentColor" stroke-width="1.7"/>'
     '<circle cx="17.6" cy="6.6" r="1.2" fill="currentColor"/></svg>'
+)
+
+IKON_WA = (
+    '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">'
+    '<path fill="currentColor" d="M12.04 2A9.9 9.9 0 0 0 2.1 11.9c0 1.75.46 3.45 1.32 4.95L2 22l5.3-1.38a9.9 9.9 0 0 0 4.74 1.2h.01A9.9 9.9 0 0 0 22 11.9 9.9 9.9 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.18-1.14l-.3-.18-3.11.81.83-3.03-.19-.31a8.2 8.2 0 0 1-1.26-4.4 8.23 8.23 0 0 1 8.23-8.21 8.2 8.2 0 0 1 5.82 2.41 8.18 8.18 0 0 1 2.4 5.82 8.23 8.23 0 0 1-8.23 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.15.16-.29.18-.54.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.48c-.16 0-.43.06-.65.31-.23.25-.86.84-.86 2.05s.88 2.38 1 2.54c.12.17 1.73 2.64 4.19 3.7.59.25 1.04.4 1.4.51.59.19 1.12.16 1.55.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.08.15-1.18-.06-.11-.23-.17-.48-.29Z"/>'
+    '</svg>'
 )
 
 IKON_ZOOM = (
@@ -69,8 +75,46 @@ def tautan_pesan(produk=None):
     return dasar
 
 
+def kanal_utama():
+    """Teks kanal yang dipakai di copy: WhatsApp kalau nomornya sudah ada."""
+    return "WhatsApp" if SITE.get("wa") else "Instagram"
+
+
+def nomor_wa():
+    return SITE.get("wa_tampil", "")
+
+
+def jam_buka():
+    return SITE.get("jam_buka_hari") or SITE.get("jam_buka", "")
+
+
+def peta_semat():
+    """Peta Google yang bisa digeser tanpa membuka tab baru."""
+    src = SITE.get("peta_semat")
+    if not src:
+        return ""
+    return (
+        '<div class="peta">'
+        '<iframe src="%s" title="Peta lokasi %s" loading="lazy" '
+        'referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>'
+        '</div>' % (escape(src), escape(SITE.get("alamat", "")))
+    )
+
+
+def tombol_maps(kelas="tombol tombol--garis"):
+    maps = SITE.get("maps")
+    if not maps:
+        return ""
+    return ('<a class="%s" href="%s" target="_blank" rel="noopener">Buka di Google Maps</a>'
+            % (kelas, escape(maps)))
+
+
 def pesan(kelas, teks, produk=None, ikon=False):
-    isi = (IKON_IG + " ") if ikon else ""
+    """Ikon menyesuaikan kanal tujuan: WhatsApp kalau nomornya sudah diisi."""
+    if ikon:
+        isi = ("%s " % (IKON_WA if SITE.get("wa") else IKON_IG)) if ikon else ""
+    else:
+        isi = ""
     return '<a class="%s" href="%s" target="_blank" rel="noopener">%s%s</a>' % (
         kelas, escape(tautan_pesan(produk)), isi, teks)
 
@@ -252,7 +296,7 @@ def pita_mockup():
     return """
 <div class="pita-mockup" role="note">
   <span>Mockup desain</span>
-  <p>Belum situs resmi. Nomor WhatsApp dan jam pesanan masih menunggu pemilik.</p>
+  <p>Pratinjau desain, belum situs resmi. Harga dan jam buka sudah sesuai data pemilik.</p>
 </div>"""
 
 
@@ -296,7 +340,7 @@ def tutup(melayang=True):
     tombol = ""
     if melayang:
         tombol = ('<a class="wa-melayang" href="%s" target="_blank" rel="noopener" '
-                  'aria-label="Pesan lewat Instagram %s">%s</a>\n'
+                  'aria-label="Pesan lewat WhatsApp %s">%s</a>\n'
                   % (escape(tautan_pesan()), escape(USAHA), IKON_IG))
     return f"""
 {tombol}<script src="/assets/js/site.js" defer></script>
@@ -305,21 +349,34 @@ def tutup(melayang=True):
 """
 
 
+_CACHE_LOGO_KAKI = {}
+
+
 def kaki(gaya):
+    # tinta logo mengikuti warna teks footer tiap arah
+    if gaya not in _CACHE_LOGO_KAKI:
+        tinta = {1: (42, 29, 21), 2: (255, 248, 236), 3: (38, 43, 34), 4: (203, 218, 208)}.get(gaya, (42, 29, 21))
+        _CACHE_LOGO_KAKI[gaya] = webp(logo_transparan("logo-anyha.jpeg", 420, tinta), "kaki-logo-%d.webp" % gaya)
+    logo = _CACHE_LOGO_KAKI[gaya]
     isi = f"""
 <footer class="kaki">
   <div class="wrap kaki__{'grid' if gaya in (1, 4) else 'isi'}">
     <div>
+      <a class="kaki__merek" href="/arah-{gaya}/">
+        <img src="/{logo['berkas']}" alt="Logo Fruit Punch by Anyha" width="{logo['w']}" height="{logo['h']}" loading="lazy" decoding="async">
+      </a>
       <strong>{escape(NAMA)}</strong>
-      <p>Dessert dan minuman buah rumahan dari {escape(SITE.get('alamat', 'Jambi'))}. Pesanan lewat Instagram.</p>
+      <p>Dessert dan minuman buah rumahan di {escape(SITE.get('alamat', 'Jambi'))}. Buka {escape(jam_buka())}.</p>
     </div>
     <div>
       <ul>
         <li><a href="/arah-{gaya}/menu/">Menu</a></li>
         <li><a href="/arah-{gaya}/tentang/">Tentang</a></li>
         <li><a href="/arah-{gaya}/kontak/">Cara pesan</a></li>
+        <li><a href="{escape(tautan_pesan())}" target="_blank" rel="noopener">WhatsApp {escape(nomor_wa())}</a></li>
         <li><a href="{escape(SITE['instagram'])}" target="_blank" rel="noopener">Instagram {escape(SITE['handle'])}</a></li>
         <li><a href="{escape(SITE.get('maps', SITE['instagram']))}" target="_blank" rel="noopener">{escape(SITE.get('alamat', 'Lokasi'))}</a></li>
+        <li>Buka {escape(jam_buka())}</li>
       </ul>
     </div>
   </div>
@@ -396,7 +453,7 @@ def kartu_1(p, g):
 def langkah_1():
     langkah = [
         ("Pilih menunya", "Lihat tiga menu beserta harganya, lalu tentukan jumlahnya."),
-        ("Chat Instagram", "Kirim pesan berisi menu, jumlah, dan tanggal ambil atau kirim."),
+        ("Chat WhatsApp", "Kirim pesan berisi menu, jumlah, dan tanggal ambil atau kirim."),
         ("Konfirmasi", "Pemilik membalas harga dan jadwal. Pesanan disiapkan setelah itu."),
     ]
     return "".join(f"""
@@ -421,7 +478,7 @@ def arah_1(g):
       <h1>Mangga manis, <em>dirakit per pesanan.</em></h1>
       <p class="hero__p">Dessert cup berisi potongan mangga, sagu mutiara, dan susu. Ada juga fruit punch botolan dari campuran buah segar. Semua dibuat setelah pesanan masuk, jadi datangnya masih segar.</p>
       <div class="aksi">
-        {pesan("tombol", "Pesan lewat Instagram", ikon=True)}
+        {pesan("tombol", "Pesan lewat WhatsApp", ikon=True)}
         <a class="tombol tombol--garis" href="/arah-1/menu/">Lihat menu</a>
       </div>
       <ul class="poin">
@@ -455,7 +512,7 @@ def arah_1(g):
     <div class="bagian__kepala">
       <div>
         <p class="label"><span>02</span> Cara pesan</p>
-        <h2>Tiga langkah, lewat chat Instagram.</h2>
+        <h2>Tiga langkah, lewat WhatsApp.</h2>
       </div>
       <p>Belum ada aplikasi atau keranjang. Cukup chat, lalu pesanan disiapkan.</p>
     </div>
@@ -470,7 +527,7 @@ def arah_1(g):
       <p>Sebutkan menu, jumlah, dan mau diambil atau dikirim. Balasan berisi harga dan jadwal siapnya.</p>
     </div>
     <div class="aksi">
-      {pesan("tombol tombol--mangga", "Chat Instagram", ikon=True)}
+      {pesan("tombol tombol--mangga", "Chat WhatsApp", ikon=True)}
     </div>
   </div>
 </section>
@@ -489,8 +546,8 @@ def isi_menu_1(g):
   <div class="wrap">
     <div class="menu-grid">{semua_kartu(kartu_1, g)}</div>
     <div class="d-catatan">
-      <p><strong>Pesan lewat Instagram.</strong> Sebutkan menu, jumlah, dan tanggal.</p>
-      {pesan("tombol", "Chat Instagram", ikon=True)}
+      <p><strong>Pesan lewat WhatsApp.</strong> Sebutkan menu, jumlah, dan tanggal.</p>
+      {pesan("tombol", "Chat WhatsApp", ikon=True)}
     </div>
   </div>
 </section>
@@ -499,7 +556,7 @@ def isi_menu_1(g):
     <div class="bagian__kepala">
       <div>
         <p class="label"><span>02</span> Cara pesan</p>
-        <h2>Tiga langkah, lewat chat Instagram.</h2>
+        <h2>Tiga langkah, lewat WhatsApp.</h2>
       </div>
     </div>
     <ol class="langkah">{langkah_1()}</ol>
@@ -515,13 +572,13 @@ def isi_tentang_1(g):
       <p class="label"><span>02</span> Cara kami bekerja</p>
       <h2>Tidak ada stok menganggur.</h2>
       <p>Mangga dipotong setelah pesanan masuk, lalu cup dirakit dan langsung disimpan dingin. Fruit punch diracik dengan takaran gula yang lebih ringan dari minuman buah biasa.</p>
-      <p>Karena itu, pesanan sebaiknya masuk sehari sebelum mau diambil. Untuk jumlah banyak, tanyakan lebih awal lewat Instagram.</p>
+      <p>Karena itu, pesanan sebaiknya masuk sehari sebelum mau diambil. Untuk jumlah banyak, tanyakan lebih awal lewat WhatsApp.</p>
       <ul class="d-fakta">
         <li><strong>Bahan</strong><span>Mangga potong, sagu mutiara, susu, campuran buah segar.</span></li>
         <li><strong>Kemasan</strong><span>Cup plastik bening dan botol, siap makan langsung.</span></li>
         <li><strong>Pemesanan</strong><span>Lewat chat Instagram, tanpa minimum yang rumit.</span></li>
       </ul>
-      <div class="aksi">{pesan("tombol", "Chat Instagram", ikon=True)}</div>
+      <div class="aksi">{pesan("tombol", "Chat WhatsApp", ikon=True)}</div>
     </div>
     <figure class="d-foto">
       {gambar(g["a1_logo"], "Logo Dessert by Anyha bertuliskan Fruit Punch by Anyha dengan keterangan mix fruit, fresh, less sugar")}
@@ -550,7 +607,7 @@ def isi_tentang_1(g):
 
 
 def isi_kontak_1():
-    return kepala_dalam("01", "Cara pesan", "Chat, konfirmasi, lalu ambil atau kirim.", "Semua pesanan diproses lewat Instagram. Belum ada nomor WhatsApp khusus website, jadi tombol di halaman ini menuju DM Instagram.") + f"""
+    return kepala_dalam("01", "Cara pesan", "Chat, konfirmasi, lalu ambil atau kirim.", f"Pesanan diterima lewat WhatsApp {nomor_wa()} atau DM Instagram. Jam buka {jam_buka()}.") + f"""
 <section class="bagian">
   <div class="wrap">
     <div class="d-grid3">
@@ -562,13 +619,13 @@ def isi_kontak_1():
       </div>
       <div class="d-kartu">
         <h2>WhatsApp</h2>
-        <p>Nomor khusus website menyusul dari pemilik.</p>
-        <p class="d-kecil">Sementara ini semua pesanan lewat Instagram.</p>
-        {pesan("tombol tombol--garis", "Chat Instagram")}
+        <p>Cara tercepat memesan. Balasan di jam buka.</p>
+        <p class="d-kecil">{escape(nomor_wa())}</p>
+        {pesan("tombol tombol--garis", "Chat WhatsApp")}
       </div>
       <div class="d-kartu">
         <h2>Ambil atau kirim</h2>
-        <p>Area pengiriman dan jam ambil menyusul dari pemilik.</p>
+        <p>Buka {escape(jam_buka())}. Bisa diambil langsung atau dikirim.</p>
         <p class="d-kecil">Sebutkan alamat saat chat, pemilik membalas ongkirnya.</p>
       </div>
     </div>
@@ -661,7 +718,7 @@ def langkah_2():
 def arah_2(g):
     return kepala(
         "Mockup Dessert by Anyha, dessert cup mangga dan fruit punch",
-        DESKRIPSI["beranda"] + " Pesan lewat Instagram.",
+        DESKRIPSI["beranda"] + " Pesan lewat WhatsApp.",
         "arah-2.css", "#14100E", FONTS[2], "/arah-2/", "favicon-2.png",
     ) + nav_2("beranda") + f"""
 <main id="utama">
@@ -747,7 +804,7 @@ def arah_2(g):
       <h2>Lapar?<br>Chat sekarang.</h2>
       <p>Sebut menu, jumlah, dan tanggal. Balasan berisi harga dan jadwal siap.</p>
     </div>
-    <div class="aksi">{pesan("tombol", "Chat Instagram", ikon=True)}</div>
+    <div class="aksi">{pesan("tombol", "Chat WhatsApp", ikon=True)}</div>
   </div>
 </section>
 </main>
@@ -765,8 +822,8 @@ def isi_menu_2(g):
   <div class="wrap">
     <ul class="baris-menu">{semua_kartu(baris_menu_2, g)}</ul>
     <div class="d-catatan">
-      <p>Pesan lewat Instagram, sebutkan menu dan jumlahnya.</p>
-      {pesan("tombol", "Chat Instagram", ikon=True)}
+      <p>Pesan lewat WhatsApp, sebutkan menu dan jumlahnya.</p>
+      {pesan("tombol", "Chat WhatsApp", ikon=True)}
     </div>
   </div>
 </section>
@@ -793,9 +850,9 @@ def isi_tentang_2(g):
       <ul class="d-fakta">
         <li><strong>Bahan</strong><span>Mangga potong, sagu mutiara, susu, campuran buah segar.</span></li>
         <li><strong>Kemasan</strong><span>Cup plastik bening dan botol, siap makan langsung.</span></li>
-        <li><strong>Pemesanan</strong><span>Chat Instagram, tanpa minimum yang rumit.</span></li>
+        <li><strong>Pemesanan</strong><span>Chat WhatsApp, tanpa minimum yang rumit.</span></li>
       </ul>
-      <div class="aksi">{pesan("tombol", "Chat Instagram", ikon=True)}</div>
+      <div class="aksi">{pesan("tombol", "Chat WhatsApp", ikon=True)}</div>
     </div>
     <figure class="d-foto">
       {gambar(g["a2_logo"], "Label Fruit Punch by Anyha dengan teks mix fruit, fresh, less sugar")}
@@ -822,7 +879,7 @@ def isi_tentang_2(g):
 
 
 def isi_kontak_2():
-    return kepala_dalam("01", "Order", "Chat, konfirmasi, ambil.", "Semua pesanan lewat Instagram. Nomor WhatsApp khusus website belum ada, jadi tombol di sini menuju DM Instagram.") + f"""
+    return kepala_dalam("01", "Order", "Chat, konfirmasi, ambil.", f"Pesanan lewat WhatsApp {nomor_wa()} atau DM Instagram. Jam buka {jam_buka()}.") + f"""
 <section class="bagian">
   <div class="wrap">
     <div class="d-grid3">
@@ -834,13 +891,13 @@ def isi_kontak_2():
       </div>
       <div class="d-kartu">
         <h2>WhatsApp</h2>
-        <p>Nomor khusus website menyusul.</p>
-        <p class="d-kecil">Sementara semua pesanan lewat Instagram.</p>
-        {pesan("tombol tombol--garis", "Chat Instagram")}
+        <p>Cara tercepat memesan, dibalas di jam buka.</p>
+        <p class="d-kecil">{escape(nomor_wa())}</p>
+        {pesan("tombol tombol--garis", "Chat WhatsApp")}
       </div>
       <div class="d-kartu">
         <h2>Ambil atau kirim</h2>
-        <p>Area pengiriman dan jam ambil menyusul dari pemilik.</p>
+        <p>Buka {escape(jam_buka())}. Bisa diambil langsung atau dikirim.</p>
         <p class="d-kecil">Sebut alamat saat chat, ongkir dibalas pemilik.</p>
       </div>
     </div>
@@ -913,7 +970,7 @@ def daftar_3(p, g):
 
 def langkah_3():
     langkah = [
-        ("Pilih dan chat", "Tentukan menu dan jumlah, lalu kirim pesan lewat Instagram."),
+        ("Pilih dan chat", "Tentukan menu dan jumlah, lalu kirim pesan lewat WhatsApp."),
         ("Konfirmasi harga", "Pemilik membalas total, ongkir, dan jadwal siap."),
         ("Ambil atau terima", "Pesanan disiapkan hari itu dan sebaiknya langsung disantap dingin."),
     ]
@@ -940,7 +997,7 @@ def arah_3(g):
     <h1>Manis yang <em>tenang.</em></h1>
     <p class="hero__p">Dessert cup mangga dan fruit punch, dirakit setelah pesanan masuk. Mangga potong, sagu mutiara, susu, dan campuran buah dengan gula yang lebih ringan.</p>
     <div class="aksi">
-      {pesan("tombol", "Pesan lewat Instagram", ikon=True)}
+      {pesan("tombol", "Pesan lewat WhatsApp", ikon=True)}
       <a class="tombol tombol--garis" href="/arah-3/menu/">Lihat menu</a>
     </div>
     <figure class="hero__foto">
@@ -957,7 +1014,7 @@ def arah_3(g):
     <div class="bagian__kepala">
       <p class="label">01 / Menu</p>
       <h2>Yang tersedia hari ini.</h2>
-      <p>Harga belum ditampilkan karena menunggu daftar resmi dari pemilik. Tanyakan lewat Instagram.</p>
+      <p>Harga per cup atau botol. Isian lengkap tiap menu ada di bawah.</p>
     </div>
     <ul class="daftar-menu">{semua_kartu(daftar_3, g)}</ul>
   </div>
@@ -987,7 +1044,7 @@ def arah_3(g):
   <div class="wrap">
     <h2>Mau pesan?</h2>
     <p>Sebutkan menu, jumlah, dan tanggal. Balasan berisi harga dan jadwal siap.</p>
-    <div class="aksi">{pesan("tombol", "Chat Instagram", ikon=True)}</div>
+    <div class="aksi">{pesan("tombol", "Chat WhatsApp", ikon=True)}</div>
   </div>
 </section>
 </main>
@@ -1005,8 +1062,8 @@ def isi_menu_3(g):
   <div class="wrap">
     <ul class="daftar-menu">{semua_kartu(daftar_3, g)}</ul>
     <div class="d-catatan">
-      <p>Pesan lewat Instagram, sebutkan menu dan jumlahnya.</p>
-      {pesan("tombol", "Chat Instagram", ikon=True)}
+      <p>Pesan lewat WhatsApp, sebutkan menu dan jumlahnya.</p>
+      {pesan("tombol", "Chat WhatsApp", ikon=True)}
     </div>
   </div>
 </section>
@@ -1034,7 +1091,7 @@ def isi_tentang_3(g):
         <li><strong>Kemasan</strong><span>Cup bening dan botol</span></li>
         <li><strong>Pesan</strong><span>Instagram, tanpa aplikasi</span></li>
       </ul>
-      <div class="aksi">{pesan("tombol", "Chat Instagram", ikon=True)}</div>
+      <div class="aksi">{pesan("tombol", "Chat WhatsApp", ikon=True)}</div>
     </div>
     <figure class="d-foto">
       {gambar(g["a3_punch"], "Botol Fruit Punch oranye dengan label Fruit Punch by Anyha")}
@@ -1056,7 +1113,7 @@ def isi_tentang_3(g):
 
 
 def isi_kontak_3():
-    return kepala_dalam("01", "Pesan", "Chat, konfirmasi, ambil.", "Semua pesanan lewat Instagram. Nomor WhatsApp khusus website belum ada, jadi tombol di halaman ini menuju DM Instagram.") + f"""
+    return kepala_dalam("01", "Pesan", "Chat, konfirmasi, ambil.", f"Pesanan lewat WhatsApp {nomor_wa()} atau DM Instagram. Jam buka {jam_buka()}.") + f"""
 <section class="bagian">
   <div class="wrap wrap--sempit">
     <div class="d-grid3">
@@ -1068,13 +1125,13 @@ def isi_kontak_3():
       </div>
       <div class="d-kartu">
         <h2>WhatsApp</h2>
-        <p>Nomor khusus website menyusul.</p>
-        <p class="d-kecil">Sementara lewat Instagram.</p>
-        {pesan("tombol tombol--garis", "Chat Instagram")}
+        <p>Cara tercepat memesan, dibalas di jam buka.</p>
+        <p class="d-kecil">{escape(nomor_wa())}</p>
+        {pesan("tombol tombol--garis", "Chat WhatsApp")}
       </div>
       <div class="d-kartu">
         <h2>Ambil atau kirim</h2>
-        <p>Area dan jam menyusul dari pemilik.</p>
+        <p>Buka {escape(jam_buka())}.</p>
         <p class="d-kecil">Sebut alamat saat chat.</p>
       </div>
     </div>
@@ -1148,7 +1205,7 @@ def kartu_4(p, g, nomor=None):
 def langkah_4():
     langkah = [
         ("Pilih menunya", "Lihat tiga menu beserta harga dan isiannya, lalu tentukan jumlah."),
-        ("Chat Instagram", "Sebut menu, jumlah, dan kapan mau diambil atau dikirim."),
+        ("Chat WhatsApp", "Sebut menu, jumlah, dan kapan mau diambil atau dikirim."),
         ("Konfirmasi", "Pemilik membalas total dan jadwal siap. Pesanan dirakit setelah itu."),
     ]
     return "".join(f"""
@@ -1163,23 +1220,25 @@ def langkah_4():
 
 def blok_lokasi():
     alamat = SITE.get("alamat", "")
-    maps = SITE.get("maps", "")
-    tombol = ('<a class="tombol tombol--garis" href="%s" target="_blank" rel="noopener">Buka di Google Maps</a>' % escape(maps)) if maps else ""
     return f"""
 <section class="bagian bagian--krim2" id="lokasi">
-  <div class="wrap lokasi">
-    <div>
-      <p class="eyebrow">Lokasi</p>
-      <h2>Diambil dari {escape(alamat)}.</h2>
-      <p>Pesanan bisa diambil langsung di lokasi. Untuk pengiriman, sebutkan alamat saat chat, pemilik membalas ongkirnya.</p>
-      <div class="aksi">{tombol}</div>
+  <div class="wrap">
+    <div class="bagian__kepala bagian__kepala--kiri">
+      <p class="eyebrow">Lokasi &amp; jam buka</p>
+      <h2>Ambil di {escape(alamat)}.</h2>
+      <p>Buka setiap hari, {escape(SITE.get('jam_buka', ''))}. Sebelum berangkat, chat dulu lewat WhatsApp {escape(nomor_wa())} supaya pesanan sudah siap.</p>
     </div>
-    <div class="lokasi__peta">
-      <div>
-        <strong>{escape(alamat)}</strong>
-        <span>Jambi City, Jambi</span>
-        <span>Jam operasional menyusul dari pemilik.</span>
+    <div class="lokasi">
+      <div class="lokasi__info">
+        <ul class="d-fakta">
+          <li><strong>Alamat</strong><span>{escape(alamat)}</span></li>
+          <li><strong>Jam buka</strong><span>Setiap hari, {escape(SITE.get('jam_buka', ''))}</span></li>
+          <li><strong>WhatsApp</strong><span>{escape(nomor_wa())}</span></li>
+          <li><strong>Ambil atau kirim</strong><span>Bisa diambil langsung, atau dikirim dengan ongkir dari pemilik.</span></li>
+        </ul>
+        <div class="aksi">{tombol_maps()}{pesan("tombol", "Chat WhatsApp", ikon=True)}</div>
       </div>
+      {peta_semat()}
     </div>
   </div>
 </section>"""
@@ -1197,9 +1256,9 @@ def arah_4(g):
     <div>
       <p class="eyebrow">Dessert rumahan, Jambi</p>
       <h1>Segarnya buah,<em>dirakit saat dipesan.</em></h1>
-      <p class="hero__p">Mango Sago, Fruit Punch, dan Asinan Kiamboy. Semua diracik setelah pesanan masuk, jadi tidak ada yang menginap di kulkas. Pesan lewat Instagram, ambil di Simpang IV Sipin.</p>
+      <p class="hero__p">Mango Sago, Fruit Punch, dan Asinan Kiamboy. Semua diracik setelah pesanan masuk, jadi tidak ada yang menginap di kulkas. Pesan lewat WhatsApp, ambil di Simpang IV Sipin.</p>
       <div class="aksi">
-        {pesan("tombol", "Pesan lewat Instagram", ikon=True)}
+        {pesan("tombol", "Pesan lewat WhatsApp", ikon=True)}
         <a class="tombol tombol--garis" href="#menu">Lihat menu</a>
       </div>
     </div>
@@ -1244,7 +1303,7 @@ def arah_4(g):
       <h2>Ketika buah segar bertemu kuah yang pas.</h2>
       <p>Dessert by Anyha mulai dari satu dessert cup mangga yang sering diminta ulang. Sekarang menunya bertambah fruit punch dan asinan kiamboy, dengan cara kerja yang sama: dirakit setelah pesanan masuk.</p>
       <p>Mangga dipotong hari itu, sagu dimasak sampai kenyal, dan kuah susu diracik dengan gula yang lebih ringan supaya rasa buahnya tetap terasa.</p>
-      <div class="aksi">{pesan("tombol", "Chat Instagram", ikon=True)}</div>
+      <div class="aksi">{pesan("tombol", "Chat WhatsApp", ikon=True)}</div>
     </div>
     <figure>
       {gambar(g["a4_cerita"], "Asinan Kiamboy dalam cup bening berisi potongan buah dan kuah")}
@@ -1283,7 +1342,7 @@ def arah_4(g):
   <div class="wrap dua--proses">
     <div>
       <p class="eyebrow">Cara pesan</p>
-      <h2>Tiga langkah, lewat chat Instagram.</h2>
+      <h2>Tiga langkah, lewat WhatsApp.</h2>
       <ol class="langkah" style="margin-top:1.75rem">{langkah_4()}</ol>
     </div>
     <figure>
@@ -1298,7 +1357,7 @@ def arah_4(g):
     <p class="eyebrow">Saatnya pesan</p>
     <h2>Segarnya bikin pesan lagi.</h2>
     <p>Sebut menu, jumlah, dan tanggal. Balasan berisi total dan jadwal siap.</p>
-    <div class="aksi">{pesan("tombol tombol--putih", "Pesan lewat Instagram", ikon=True)}</div>
+    <div class="aksi">{pesan("tombol tombol--putih", "Pesan lewat WhatsApp", ikon=True)}</div>
   </div>
 </section>
 </main>
@@ -1317,7 +1376,7 @@ def isi_menu_4(g):
     <div class="produk-grid">{semua_kartu(kartu_4, g)}</div>
     <div class="d-catatan">
       <p><strong>Pesan lewat Instagram.</strong> Sebutkan menu, jumlah, dan tanggal ambil atau kirim.</p>
-      {pesan("tombol", "Chat Instagram", ikon=True)}
+      {pesan("tombol", "Chat WhatsApp", ikon=True)}
     </div>
   </div>
 </section>
@@ -1346,7 +1405,7 @@ def isi_tentang_4(g):
         <li><strong>Kemasan</strong><span>Cup plastik bening dan botol, siap disantap langsung.</span></li>
         <li><strong>Lokasi</strong><span>{escape(SITE.get('alamat', ''))}</span></li>
       </ul>
-      <div class="aksi">{pesan("tombol", "Chat Instagram", ikon=True)}</div>
+      <div class="aksi">{pesan("tombol", "Chat WhatsApp", ikon=True)}</div>
     </div>
     <figure>
       {gambar(g["a4_logo"], "Label Fruit Punch by Anyha bertuliskan mix fruit, fresh, less sugar")}
@@ -1377,9 +1436,7 @@ def isi_tentang_4(g):
 
 def isi_kontak_4():
     alamat = SITE.get("alamat", "")
-    maps = SITE.get("maps", "")
-    tombol_maps = ('<a class="tombol tombol--garis" href="%s" target="_blank" rel="noopener">Buka Google Maps</a>' % escape(maps)) if maps else ""
-    return kepala_dalam("01", "Pesan", "Chat, konfirmasi, ambil di Sipin.", "Semua pesanan lewat Instagram. Lokasi pengambilan di " + escape(alamat) + ".") + f"""
+    return kepala_dalam("01", "Pesan", "Chat, konfirmasi, ambil di Sipin.", "Pesanan lewat WhatsApp atau DM Instagram. Lokasi pengambilan di " + escape(alamat) + ".") + f"""
 <section class="bagian">
   <div class="wrap">
     <div class="grid3">
@@ -1392,8 +1449,8 @@ def isi_kontak_4():
       <div class="kartu-info">
         <h2>Lokasi</h2>
         <p>{escape(alamat)}</p>
-        <p class="kecil">Jam operasional menyusul dari pemilik.</p>
-        {tombol_maps}
+        <p class="kecil">Buka setiap hari, {escape(SITE.get('jam_buka', ''))}</p>
+        {tombol_maps("tombol tombol--garis")}
       </div>
       <div class="kartu-info">
         <h2>Ambil atau kirim</h2>
@@ -1405,6 +1462,7 @@ def isi_kontak_4():
       <p><strong>Jumlah banyak</strong> sebaiknya dipesan sehari sebelumnya.</p>
       {pesan("tombol", "Tanya jadwal")}
     </div>
+    {peta_semat()}
     <div class="dua" style="margin-top:2.75rem">
       <div>
         <p class="eyebrow">Isi chat</p>
