@@ -1182,7 +1182,23 @@ def main():
 
     salin_aset()
 
-    tulis("robots.txt", "User-agent: *\nAllow: /\n")
+    rute = ["/"]
+    for n in (1, 2, 3):
+        rute += ["/arah-%d/" % n, "/arah-%d/menu/" % n, "/arah-%d/tentang/" % n, "/arah-%d/kontak/" % n]
+
+    if SITE.get("url"):
+        dasar = SITE["url"].rstrip("/")
+        halaman_sitemap = "".join(
+            "  <url><loc>%s%s</loc><changefreq>monthly</changefreq><priority>%s</priority></url>\n"
+            % (dasar, r, "1.0" if r == "/" else "0.7") for r in rute)
+        tulis("sitemap.xml",
+              '<?xml version="1.0" encoding="UTF-8"?>\n'
+              '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+              + halaman_sitemap + "</urlset>\n")
+        tulis("robots.txt", "User-agent: *\nAllow: /\n\nSitemap: %s/sitemap.xml\n" % dasar)
+    else:
+        tulis("robots.txt", "User-agent: *\nAllow: /\n")
+
     tulis("_headers", "/assets/img/*\n  Cache-Control: public, max-age=604800\n/assets/css/*\n  Cache-Control: public, max-age=0, must-revalidate\n/assets/js/*\n  Cache-Control: public, max-age=0, must-revalidate\n")
 
     ukuran = jumlah = halaman = 0
