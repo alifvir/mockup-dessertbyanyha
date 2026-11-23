@@ -92,11 +92,15 @@ hapus `sumber_bersih(...)` jadi `sumber(...)`.
 
 ## Deploy
 
-Sudah live: https://dessertbyanyha.pages.dev
+Live (mockup): https://mockup-dessertbyanyha.pages.dev
 
-Semua langkah deploy (repo, proyek Pages, memantau build, membuktikan isi live,
-domain sendiri) ada di `DEPLOY.md`. Sesi berikutnya cukup bilang "deploy github
-dan pages.dev" dan berkas itu yang dibaca.
+Alamat `dessertbyanyha.pages.dev` sengaja dibiarkan kosong untuk situs resmi
+nanti. Repo: `alifvir/mockup-dessertbyanyha`, proyek Pages
+`mockup-dessertbyanyha`, keduanya terhubung lewat Connect to Git.
+
+Semua langkah deploy (repo, proyek Pages, kredensial, memantau build,
+membuktikan isi live, domain sendiri, jebakan yang sudah kena) ada di
+`DEPLOY.md`. Sesi berikutnya cukup bilang "deploy github dan pages.dev".
 
 Ringkasnya:
 

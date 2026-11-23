@@ -12,12 +12,29 @@ bukan dokumen ini. Perbarui dokumen ini setiap kali ada yang berubah.
 | Hal | Nilai |
 |---|---|
 | Folder kerja | `D:\Alif\Project\UMKM\dessertbyanyha\web` |
-| Repo GitHub | https://github.com/alifvir/dessertbyanyha (publik, branch `main`) |
-| Proyek Pages | `dessertbyanyha` |
-| URL live | https://dessertbyanyha.pages.dev |
+| Repo GitHub | https://github.com/alifvir/mockup-dessertbyanyha (publik, branch `main`) |
+| Proyek Pages | `mockup-dessertbyanyha` |
+| URL live (mockup) | https://mockup-dessertbyanyha.pages.dev |
+| URL yang DIPESAN untuk situs jadi | https://dessertbyanyha.pages.dev (sengaja dibiarkan kosong) |
 | Jenis proyek Pages | Connect to Git (BUKAN Direct Upload) |
 | Akun Cloudflare | `alifvir78@gmail.com`, account id `6974ed1876aaf81ed6adbc30ae874fde` |
 | Akun GitHub | `alifvir` |
+
+### Kenapa dua alamat
+
+`dessertbyanyha.pages.dev` disimpan untuk situs resmi saat proyek ini selesai.
+Selama masih mockup, alamat yang dipakai `mockup-dessertbyanyha.pages.dev`, jadi
+klien yang membuka tautan langsung paham bahwa itu belum situs jadi.
+
+Nama proyek Pages TIDAK bisa di-rename. Karena itu alamat dipisah dengan membuat
+proyek kedua sejak awal, bukan menunggu lalu mengganti nama. Proyek lama
+`dessertbyanyha` sudah dihapus 23 November 2026, dan DNS-nya sekarang NXDOMAIN
+(sudah diverifikasi), jadi alamat itu bebas dipakai kapan saja.
+
+Saat waktunya situs jadi: buat repo baru `dessertbyanyha` (atau pakai repo ini
+yang di-rename), buat proyek Pages `dessertbyanyha` dengan Connect to Git, lalu
+ubah `url` di `data/site.json` dan buang pita mockup. Jangan pakai `wrangler
+pages deploy` untuk proyek itu, karena akan terkunci sebagai Direct Upload.
 
 Setelan build proyek Pages:
 
@@ -91,7 +108,7 @@ jadi tidak ada langkah klik manual.
 
 ```powershell
 cd D:\Alif\Project\UMKM\dessertbyanyha\web
-gh repo create alifvir/dessertbyanyha --public --description "Mockup tiga arah situs Dessert by Anyha"
+gh repo create alifvir/mockup-dessertbyanyha --public --description "Mockup tiga arah situs Dessert by Anyha"
 ```
 
 `gh` butuh `GH_TOKEN`. Ambil dari kredensial tersimpan, jangan dari ingatan:
@@ -106,7 +123,7 @@ Lalu sambungkan dan push:
 
 ```powershell
 git remote remove origin 2>$null
-git remote add origin https://github.com/alifvir/dessertbyanyha.git
+git remote add origin https://github.com/alifvir/mockup-dessertbyanyha.git
 git branch -M main
 $env:GIT_TERMINAL_PROMPT="0"
 git push -u origin main
@@ -127,7 +144,7 @@ dari GitHub, bukan hanya nama repo:
 ```powershell
 # repo id
 $env:GH_TOKEN = $token
-gh api repos/alifvir/dessertbyanyha --jq '.id'
+gh api repos/alifvir/mockup-dessertbyanyha --jq '.id'
 ```
 
 Lalu POST ke API (isi `repo_id` hasil di atas, dan nama proyek = subdomain):
@@ -139,12 +156,12 @@ $acc = "6974ed1876aaf81ed6adbc30ae874fde"
 $h   = @{ Authorization = "Bearer $tok"; "Content-Type" = "application/json" }
 
 $body = @{
-  name = "dessertbyanyha"
+  name = "mockup-dessertbyanyha"
   production_branch = "main"
   source = @{
     type = "github"
     config = @{
-      owner = "alifvir"; repo_name = "dessertbyanyha"; repo_id = "1468395671"
+      owner = "alifvir"; repo_name = "mockup-dessertbyanyha"; repo_id = "1468395671"
       production_branch = "main"
       pr_comments_enabled = $false
       deployments_enabled = $true
@@ -173,7 +190,7 @@ Cek nama subdomain dulu sebelum memilih nama proyek, karena `pages.dev` unik
 lintas akun Cloudflare:
 
 ```powershell
-try { [System.Net.Dns]::GetHostAddresses("dessertbyanyha.pages.dev") | Out-Null; "SUDAH DIPAKAI" } catch { "kosong" }
+try { [System.Net.Dns]::GetHostAddresses("mockup-dessertbyanyha.pages.dev") | Out-Null; "SUDAH DIPAKAI" } catch { "kosong" }
 ```
 
 Kalau nama sudah dipakai, Cloudflare menambahkan akhiran acak, dan URL tidak
@@ -185,7 +202,7 @@ Proyek baru kadang belum punya deployment. Picu satu:
 
 ```powershell
 Invoke-RestMethod -Method Post `
-  -Uri "https://api.cloudflare.com/client/v4/accounts/$acc/pages/projects/dessertbyanyha/deployments" `
+  -Uri "https://api.cloudflare.com/client/v4/accounts/$acc/pages/projects/mockup-dessertbyanyha/deployments" `
   -Headers $h -Body "{}"
 ```
 
@@ -197,7 +214,7 @@ benar, lalu buktikan isinya naik.
 ### 4a. Status build
 
 ```powershell
-$d = Invoke-RestMethod -Uri "https://api.cloudflare.com/client/v4/accounts/$acc/pages/projects/dessertbyanyha/deployments" -Headers $h
+$d = Invoke-RestMethod -Uri "https://api.cloudflare.com/client/v4/accounts/$acc/pages/projects/mockup-dessertbyanyha/deployments" -Headers $h
 $d.result[0] | Select-Object `
   @{n="commit";e={$_.deployment_trigger.metadata.commit_hash.Substring(0,7)}},
   @{n="stage"; e={$_.latest_stage.name}},
@@ -213,7 +230,7 @@ Status 200 tidak membuktikan apa pun, karena versi lama juga 200. Uji frasa yang
 hanya ada di revisi baru:
 
 ```powershell
-$u = "https://dessertbyanyha.pages.dev"
+$u = "https://mockup-dessertbyanyha.pages.dev"
 foreach ($p in @("/","/arah-1/","/arah-2/","/arah-3/","/arah-1/menu/","/arah-3/tentang/","/sitemap.xml","/robots.txt","/404","/path-ngawur-xyz")) {
   "$(curl.exe -s -o NUL -w '%{http_code}' --max-time 25 "$u$p") $p"
 }
@@ -293,7 +310,7 @@ terpasang lokal ikut dipakai. Cocokkan import pihak ketiga di `build.py` dengan
 Proyek Pages sudah Git-connected, jadi menambah domain tidak mengubah setelan
 build.
 
-1. Cloudflare Dashboard: Workers & Pages > `dessertbyanyha` > Custom domains >
+1. Cloudflare Dashboard: Workers & Pages > `mockup-dessertbyanyha` > Custom domains >
    Set up a custom domain.
 2. Isi `url` di `data/site.json` dengan domain baru, lalu `python build.py`.
 3. Push. Canonical, `og:url`, dan `sitemap.xml` ikut berubah otomatis.
@@ -334,9 +351,38 @@ git log --oneline -3
 
 ## 9. Riwayat deploy
 
-| Commit | Isi | Status Pages |
-|---|---|---|
-| `fb08d28` | Mockup awal, 14 halaman | success |
-| `f761f49` | Isi url + sitemap | success |
-| `58735d2` | Perbaiki `loading="eager"` | success |
-| `b6972a0` | Dokumentasi repo dan URL | success |
+Proyek pertama (`dessertbyanyha`) sudah dihapus. Baris di bawah mencatat
+perjalanannya supaya jelas alamat mana yang pernah dipakai.
+
+| Commit | Isi | Proyek Pages | Status |
+|---|---|---|---|
+| `fb08d28` | Mockup awal, 14 halaman | `dessertbyanyha` | success |
+| `f761f49` | Isi url + sitemap | `dessertbyanyha` | success |
+| `58735d2` | Perbaiki `loading="eager"` | `dessertbyanyha` | success |
+| `b6972a0` | Dokumentasi repo dan URL | `dessertbyanyha` | success |
+| `b7566c3` | Awalan Mockup + `DEPLOY.md` | `dessertbyanyha` | success |
+| `38bc996` | Pindah ke alamat mockup | `mockup-dessertbyanyha` | success (build pertama) |
+
+## 10. Jebakan yang sudah kena
+
+1. **`wrangler pages deploy` mengunci proyek sebagai Direct Upload.** Tidak bisa
+   dihubungkan ke Git selamanya. Untuk proyek klien, selalu Connect to Git atau
+   POST Pages API dengan `source.type = github`.
+2. **Nama proyek Pages tidak bisa di-rename.** Salah nama = buat proyek baru dan
+   hapus yang lama. Halaman akan pindah alamat.
+3. **Token OAuth wrangler kedaluwarsa tiap jam.** Ciri: Pages API membalas 401
+   `Authentication error`, padahal `wrangler whoami` masih bilang login. Obatnya
+   jalankan `npx wrangler@latest whoami` (dia refresh sendiri), lalu baca ulang
+   `oauth_token` dari `default.toml`.
+4. **`gh repo rename` tidak mengubah `repo_id`.** Itu sebabnya proyek Pages baru
+   tetap sah memakai `repo_id` lama. Yang berubah hanya `owner/repo_name`.
+5. **`git remote` tidak ikut berubah setelah repo di-rename.** Wajib
+   `git remote set-url origin <url baru>`, kalau tidak push berikutnya gagal.
+6. **BOM di pesan commit.** PowerShell 5.1 `Set-Content -Encoding UTF8` menambah
+   BOM, dan judul commit tampil dengan karakter aneh. Pakai
+   `[IO.File]::WriteAllText($f, $isi, (New-Object Text.UTF8Encoding($false)))`.
+7. **`.wrangler/` pernah ikut ter-commit.** `npx wrangler` membuat folder cache di
+   folder proyek. Sudah masuk `.gitignore`, jangan dihapus dari daftar itu.
+8. **Status 200 tidak membuktikan build baru.** Selalu bandingkan hash commit di
+   deployment dengan `git rev-parse --short HEAD`, lalu uji frasa yang hanya ada
+   di revisi baru.
