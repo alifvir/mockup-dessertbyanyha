@@ -92,11 +92,10 @@ hapus `sumber_bersih(...)` jadi `sumber(...)`.
 
 ## Deploy
 
-Live (mockup): https://mockup-dessertbyanyha.pages.dev
-
-Alamat `dessertbyanyha.pages.dev` sengaja dibiarkan kosong untuk situs resmi
-nanti. Repo: `alifvir/mockup-dessertbyanyha`, proyek Pages
-`mockup-dessertbyanyha`, keduanya terhubung lewat Connect to Git.
+**Ditutup 25 November 2026.** Klien tidak bisa melanjutkan pembayaran, jadi proyek
+Pages `mockup-dessertbyanyha` dihapus; alamatnya tidak lagi menyajikan isi.
+Repo `alifvir/mockup-dessertbyanyha` dan seluruh sumber tetap utuh. Cara
+menghidupkan lagi ada di `DEPLOY.md` bagian 3.
 
 Semua langkah deploy (repo, proyek Pages, kredensial, memantau build,
 membuktikan isi live, domain sendiri, jebakan yang sudah kena) ada di

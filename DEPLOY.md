@@ -7,14 +7,21 @@ Dokumen ini memuat semua yang sudah terbukti jalan untuk proyek ini. Kalau ada
 yang bertentangan dengan kenyataan di mesin, yang menang adalah hasil perintah,
 bukan dokumen ini. Perbarui dokumen ini setiap kali ada yang berubah.
 
-## 1. Keadaan sekarang (23 November 2026)
+## 1. Keadaan sekarang (25 November 2026)
+
+> **STATUS: DITUTUP 25 November 2026.** Klien tidak bisa melanjutkan pembayaran,
+> jadi proyek ini dihentikan. Proyek Pages `mockup-dessertbyanyha` dan
+> `dessertby-anyha` sudah dihapus; kedua alamat pages.dev tidak lagi menyajikan
+> isi (mockup membalas HTTP 530). Repo GitHub dan seluruh sumber tetap utuh.
+> Untuk menghidupkan lagi, ikuti bagian 3 dengan nama proyek dan `repo_id` yang
+> sama.
 
 | Hal | Nilai |
 |---|---|
 | Folder kerja | `D:\Alif\Project\UMKM\dessertbyanyha\web` |
 | Repo GitHub | https://github.com/alifvir/mockup-dessertbyanyha (publik, branch `main`) |
-| Proyek Pages | `mockup-dessertbyanyha` |
-| URL live (mockup) | https://mockup-dessertbyanyha.pages.dev |
+| Proyek Pages | `mockup-dessertbyanyha` (dihapus 25 Nov 2026) |
+| URL live (mockup) | https://mockup-dessertbyanyha.pages.dev (mati, HTTP 530) |
 | URL yang DIPESAN untuk situs jadi | https://dessertbyanyha.pages.dev (sengaja dibiarkan kosong) |
 | Jenis proyek Pages | Connect to Git (BUKAN Direct Upload) |
 | Akun Cloudflare | `alifvir78@gmail.com`, account id `6974ed1876aaf81ed6adbc30ae874fde` |
